@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ovena · Week 2 Self-Training</title>
+<style>
+  :root{
+    --teal:#17434B; --ocean:#2A6F7F; --deep:#0F3238; --ice:#EAF4F5; --pale:#F2F7F8;
+    --mist:#BFD8DC; --mute:#6E8A90; --body:#2E4A50; --white:#fff; --amber:#C8871E;
+    --good:#2E7D5B; --bad:#B04A3A; --ok:#C8871E;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--pale);color:var(--body);line-height:1.55}
+  header{background:linear-gradient(135deg,var(--deep),var(--teal) 60%,var(--ocean));color:var(--white);padding:28px 24px 20px}
+  header .wrap,main{max-width:1060px;margin:0 auto}
+  header h1{font-size:1.5rem;font-weight:700;letter-spacing:.2px}
+  header p{color:var(--mist);margin-top:4px;font-size:.95rem}
+  .who{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:22px;
+       padding:7px 15px;font-size:.82rem;color:#fff;white-space:nowrap}
+  .who a{color:var(--mist);margin-left:9px;text-decoration:underline;cursor:pointer}
+  .who a:hover{color:#fff}
+  nav{position:sticky;top:0;z-index:9;background:var(--teal);box-shadow:0 2px 10px rgba(15,50,56,.25)}
+  nav .wrap{max-width:1060px;margin:0 auto;display:flex;flex-wrap:wrap}
+  nav button{background:none;border:none;color:var(--mist);padding:13px 15px;font-size:.9rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent}
+  nav button:hover{color:#fff}
+  nav button.on{color:#fff;border-bottom-color:var(--amber)}
+  main{padding:26px 20px 60px}
+  section{display:none}
+  section.on{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  h2{color:var(--teal);font-size:1.35rem;margin-bottom:6px}
+  .sub{color:var(--mute);margin-bottom:20px;font-size:.95rem}
+  .card{background:#fff;border-radius:14px;padding:20px 22px;box-shadow:0 3px 14px rgba(23,67,75,.08);margin-bottom:16px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:800px){.grid2,.grid3{grid-template-columns:1fr}}
+  .tag{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:1.2px;color:var(--ocean);text-transform:uppercase;margin-bottom:6px}
+  .band{background:var(--teal);color:var(--ice);border-radius:14px;padding:18px 22px;margin:16px 0}
+  .band b{color:#fff}
+  ul.tight{margin:8px 0 0 18px}
+  ul.tight li{margin-bottom:6px}
+  .btn{background:var(--ocean);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:.95rem;font-weight:600;cursor:pointer}
+  .btn:hover{background:var(--teal)}
+  .btn:disabled{opacity:.55;cursor:not-allowed}
+  .btn.ghost{background:var(--ice);color:var(--teal)}
+  .daylbl{display:inline-block;background:var(--amber);color:#fff;border-radius:7px;padding:3px 12px;font-size:.8rem;font-weight:700;letter-spacing:1px;margin-bottom:10px}
+  .check{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1.5px solid var(--ice);border-radius:10px;margin-bottom:10px;cursor:pointer}
+  .check input{margin-top:4px;accent-color:var(--ocean);width:17px;height:17px}
+  .check.done{background:var(--ice)}
+  .steplbl{display:inline-block;background:var(--teal);color:#fff;border-radius:6px;padding:2px 10px;font-size:.75rem;font-weight:700;letter-spacing:1px;margin-bottom:6px}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:.9rem;font-weight:600;color:var(--body);margin-bottom:5px}
+  select,input[type=number]{width:100%;padding:10px 12px;border:1.5px solid var(--mist);border-radius:9px;font-size:1rem;color:var(--body);background:#fff}
+  input[type=range]{width:100%;accent-color:var(--ocean)}
+  .stat{background:var(--ice);border-radius:11px;padding:14px 16px;text-align:center}
+  .stat .v{font-size:1.5rem;font-weight:700;color:var(--teal)}
+  .stat .l{font-size:.75rem;font-weight:700;letter-spacing:.8px;color:var(--mute);text-transform:uppercase;margin-top:3px}
+  .stat.hero{background:var(--teal)}
+  .stat.hero .v{color:#fff}
+  .stat.hero .l{color:var(--mist)}
+  .story{background:var(--ice);border-left:5px solid var(--ocean);border-radius:0 12px 12px 0;padding:16px 18px;font-size:1.05rem;margin-bottom:14px}
+  .story b{color:var(--teal)}
+  .ladder{display:flex;gap:8px;margin:10px 0 4px}
+  .rung{flex:1;text-align:center;padding:9px 4px;border-radius:9px;background:var(--pale);border:1.5px solid var(--mist);font-size:.8rem;color:var(--mute)}
+  .rung.hit{background:var(--ocean);border-color:var(--ocean);color:#fff;font-weight:700}
+  .note{font-size:.85rem;color:var(--mute);font-style:italic;margin-top:10px}
+  .mkt{border-left:5px solid var(--ocean)}
+  .mkt h3{color:var(--teal);font-size:1.05rem;margin-bottom:4px}
+  .mkt .row{margin-top:8px}
+  .mkt .lbl{font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ocean)}
+  .mkt .lbl.pain{color:var(--bad)}
+  .mkt .lbl.say{color:var(--amber)}
+  .mkt p{font-size:.9rem}
+  .pill{display:inline-block;background:var(--ice);color:var(--teal);border-radius:20px;padding:3px 11px;font-size:.75rem;font-weight:700;margin:2px 3px 2px 0}
+  .pill.no{background:#F6E9E6;color:var(--bad)}
+  .pill.gold{background:#F7EEDD;color:var(--amber)}
+  .flash{perspective:900px;cursor:pointer;height:200px}
+  .flash .inner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+  .flash.flip .inner{transform:rotateY(180deg)}
+  .face{position:absolute;inset:0;backface-visibility:hidden;border-radius:14px;padding:18px;display:flex;flex-direction:column;justify-content:center}
+  .face.front{background:var(--teal);color:#fff}
+  .face.front .q{font-size:1.02rem;font-style:italic}
+  .face.front .t{font-size:.7rem;letter-spacing:1.2px;color:var(--mist);text-transform:uppercase;margin-bottom:8px;font-weight:700}
+  .face.back{background:#fff;border:1.5px solid var(--mist);transform:rotateY(180deg);color:var(--body);font-size:.87rem;overflow:auto}
+  .face.back b{color:var(--ocean)}
+  .hint{text-align:center;color:var(--mute);font-size:.82rem;margin-bottom:14px}
+  .scene-pick{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:800px){.scene-pick{grid-template-columns:1fr}}
+  .scene-card{cursor:pointer;border:2px solid transparent;transition:.15s}
+  .scene-card:hover{border-color:var(--ocean);transform:translateY(-2px)}
+  .scene-card h3{color:var(--teal);font-size:1rem;margin-bottom:5px}
+  .scene-card p{font-size:.86rem;color:var(--mute)}
+  .rp-say{background:var(--ice);border-left:5px solid var(--ocean);border-radius:0 12px 12px 0;padding:14px 18px;margin-bottom:6px;font-style:italic;color:var(--teal)}
+  .rp-say .who2{font-style:normal;font-weight:700;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;color:var(--ocean);display:block;margin-bottom:4px}
+  .rp-ctx{font-size:.85rem;color:var(--mute);margin:0 0 14px 4px}
+  .opt{display:block;width:100%;text-align:left;background:#fff;border:1.5px solid var(--mist);border-radius:11px;padding:13px 16px;margin-bottom:9px;font-size:.92rem;color:var(--body);cursor:pointer}
+  .opt:hover{border-color:var(--ocean);background:var(--pale)}
+  .opt.picked-2{border-color:var(--good);background:#EAF5F0}
+  .opt.picked-1{border-color:var(--ok);background:#FAF3E4}
+  .opt.picked-0{border-color:var(--bad);background:#F9EDEA}
+  .fb{border-radius:11px;padding:13px 16px;margin:4px 0 14px;font-size:.9rem;display:none}
+  .fb.show{display:block}
+  .fb.g{background:#EAF5F0;border-left:5px solid var(--good)}
+  .fb.o{background:#FAF3E4;border-left:5px solid var(--ok)}
+  .fb.b{background:#F9EDEA;border-left:5px solid var(--bad)}
+  .progress{height:8px;background:var(--ice);border-radius:6px;overflow:hidden;margin-bottom:18px}
+  .progress i{display:block;height:100%;background:var(--ocean);transition:width .3s}
+  .score-big{font-size:2.4rem;font-weight:800;color:var(--teal);text-align:center}
+  .rp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .qq{margin-bottom:4px;font-weight:600;color:var(--teal)}
+  .qnum{color:var(--mute);font-weight:700;font-size:.78rem;letter-spacing:1px}
+  .result-badge{display:inline-block;border-radius:20px;padding:6px 18px;font-weight:700;color:#fff;background:var(--ocean);margin-top:8px}
+  #saveStatus{margin-top:12px;font-size:.9rem}
+  #saveStatus code{background:var(--ice);padding:1px 6px;border-radius:5px;font-size:.85em}
+  footer{background:var(--teal);color:var(--mist);text-align:center;padding:18px;font-size:.82rem}
+  /* ---------- login gate ---------- */
+  #gate{position:fixed;inset:0;z-index:99;background:linear-gradient(135deg,var(--deep),var(--teal) 60%,var(--ocean));
+        display:flex;align-items:center;justify-content:center;padding:20px}
+  .gate-card{background:#fff;border-radius:16px;max-width:430px;width:100%;padding:34px 32px;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+  .gate-logo{font-weight:800;color:var(--teal);font-size:1.35rem;letter-spacing:.4px}
+  .gate-tag{display:inline-block;background:var(--amber);color:#fff;border-radius:7px;padding:3px 12px;font-size:.72rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-top:8px}
+  .gate-card h2{margin:16px 0 6px;font-size:1.25rem}
+  .gate-card .gsub{color:var(--mute);font-size:.9rem}
+  .gate-card label{display:block;font-size:.85rem;font-weight:600;margin:15px 0 5px;color:var(--body)}
+  .gate-card label span{color:var(--mute);font-weight:400}
+  #loginEmail,#loginName{width:100%;padding:11px 13px;border:1.5px solid var(--mist);border-radius:9px;font-size:1rem;color:var(--body)}
+  #loginEmail:focus,#loginName:focus{outline:none;border-color:var(--ocean)}
+  #loginErr{color:var(--bad);font-size:.85rem;margin-top:9px;min-height:1.2em}
+  .gate-card .btn{width:100%;margin-top:12px;padding:13px}
+  .gate-note{margin-top:18px;font-size:.8rem;color:var(--mute);border-top:1px solid var(--ice);padding-top:12px}
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN GATE ================= -->
+<div id="gate">
+  <div class="gate-card">
+    <div class="gate-logo">Ovena Health</div>
+    <span class="gate-tag">Week 2 Self-Training</span>
+    <h2>Sign in to start</h2>
+    <p class="gsub">Enter your email so your quiz results land in Harold's sheet automatically. 2 days · about 1.5 hours a day.</p>
+    <label for="loginEmail">Email address *</label>
+    <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email">
+    <label for="loginName">Your name <span>(optional)</span></label>
+    <input type="text" id="loginName" placeholder="Alexis" autocomplete="name">
+    <div id="loginErr"></div>
+    <button class="btn" onclick="doLogin()">Start training →</button>
+    <p class="gate-note">🔒 What gets saved: your email, each role-play score, and every quiz attempt (score + answers). Nothing else.</p>
+  </div>
+</div>
+
+<!-- ================= APP (hidden until login) ================= -->
+<div id="app" style="display:none">
+<header><div class="wrap" style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+  <div>
+    <h1>Ovena Health · Week 2 Self-Training</h1>
+    <p>2 days of training you can do on your own. Work top to bottom. Your quiz score goes straight to Harold's sheet.</p>
+  </div>
+  <div class="who">👤 <span id="whoChip"></span><a onclick="logout()">Not you?</a></div>
+</div></header>
+<nav><div class="wrap">
+  <button class="on" data-s="start">Start Here</button>
+  <button data-s="math">💰 Money Math</button>
+  <button data-s="menu">What We Sell</button>
+  <button data-s="markets">Who We Call</button>
+  <button data-s="disc">The Questions</button>
+  <button data-s="rp">🎭 Role Play</button>
+  <button data-s="quiz">✅ Quiz</button>
+</div></nav>
+<main>
+
+<!-- ================= START ================= -->
+<section id="start" class="on">
+  <h2>Your 2-day plan</h2>
+  <p class="sub">Harold can't sit with you this week, so this page is your trainer. Do it in order. Check off each box as you finish.</p>
+  <div class="card">
+    <span class="daylbl">DAY 1 — LEARN THE BUSINESS (about 1.5 hours)</span>
+    <label class="check"><input type="checkbox"><span><b>1 · Money Math (30 min).</b> Learn the discounts and how YOU get paid. Play with the calculator until this question is easy: <i>"If a foot doctor buys 25 pairs of socks every month, how much do I make in a year?"</i></span></label>
+    <label class="check"><input type="checkbox"><span><b>2 · What We Sell (15 min).</b> We sell exactly 3 things right now. Know all 3, and know the 1 thing that's coming next month.</span></label>
+    <label class="check"><input type="checkbox"><span><b>3 · Who We Call (45 min).</b> This is the big one. 7 types of customers. For each one, read their PAIN (what hurts them) — then say out loud what you'd lead with on a call.</span></label>
+  </div>
+  <div class="card">
+    <span class="daylbl">DAY 2 — PRACTICE LIKE IT'S REAL (about 1.5 hours)</span>
+    <label class="check"><input type="checkbox"><span><b>4 · The Questions (20 min).</b> Flip each card. Say the question OUT LOUD before you look at the back. These questions are how you start every call.</span></label>
+    <label class="check"><input type="checkbox"><span><b>5 · Role Play (45 min).</b> Three practice calls. You need 88% or better on each one. Under 90%? Play it again — real calls are harder than this game. Every attempt is logged for Harold.</span></label>
+    <label class="check"><input type="checkbox"><span><b>6 · Quiz (15 min).</b> 15 questions. Your score is sent to Harold's sheet automatically when you hit Grade — screenshot it as a backup.</span></label>
+  </div>
+  <div class="card" style="border-left:5px solid var(--amber)"><span class="tag" style="color:var(--amber)">⏳ Coming soon — your rep portal</span>
+    <p style="margin-top:4px">You're getting a portal built for reps. It will show, in one simple place: <b>your accounts</b> and what they're ordering · <b>the revenue you're generating</b> · whether each account is ordering <b>more or less</b> than before · and <b>when orders ship</b>. How to use it when it lands: check it every morning. An account ordering LESS is a phone call TODAY — that's how you keep accounts active instead of losing them quietly. A shipping delay? You call the customer before they call you. Until it's live, Odoo is your tracker — log every call, same day.</p></div>
+  <div class="band"><b>The one big idea behind everything:</b> doctors and nurses do NOT make much money on supplies. So why would they buy from us? Two reasons. Some of them <b>MAKE money</b> with us — they buy our stuff at wholesale prices and sell it to their patients at a profit. The rest <b>SAVE money</b> with us — they get everything for a dressing change in one box instead of buying 5 things from 5 places. Every single page in this training comes back to that: make them money, or save them money.</div>
+</section>
+
+<!-- ================= MONEY MATH ================= -->
+<section id="math">
+  <h2>Money Math — what a deal pays you</h2>
+  <p class="sub">First read the 3 rules. Then build a pretend order below and watch the numbers change.</p>
+
+  <div class="card">
+    <div class="tag">The 3 rules — that's all there is</div>
+    <ul class="tight">
+      <li><b>Rule 1 — Buy more, pay less.</b> Customers get a discount for bigger orders: <b>10+ items = 10% off · 25+ = 15% off · 50+ = 20% off.</b> That's the whole discount system. Nothing deeper without Harold's OK — never make up a discount on the phone.</li>
+      <li><b>Rule 2 — You get a cut of every order.</b> Your cut is <b>12%</b> of what the customer pays. And when an order hits <b>50+ items, your cut jumps to 15%</b>. So big orders pay you twice: bigger total AND a bigger percent.</li>
+      <li><b>Rule 3 — Tiny orders pay you 5%.</b> We WILL sell someone 1 or 2 boxes — but your cut drops to 5% on those. So don't chase them. Your job is bulk orders (10+) that repeat every month.</li>
+    </ul>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <span class="steplbl">STEP 1</span>
+      <div class="field"><label>What are you selling?</label>
+        <select id="prod"></select></div>
+      <span class="steplbl">STEP 2</span>
+      <div class="field"><label>How many? → <b id="qtyLab">10</b></label>
+        <input type="range" id="qty" min="1" max="100" value="10">
+        <div class="ladder" id="ladder"></div></div>
+      <div class="note" style="margin-top:2px">Your cut is automatic: <b>12%</b> of the order · jumps to <b>15%</b> at 50+ items · drops to <b>5%</b> on 1–2 box orders.</div>
+    </div>
+    <div class="card">
+      <div class="tag">What happens</div>
+      <div class="story" id="oStory">—</div>
+      <div class="grid3" style="gap:10px">
+        <div class="stat"><div class="v" id="oPrice">—</div><div class="l">Buyer pays per item</div></div>
+        <div class="stat"><div class="v" id="oTotal">—</div><div class="l">Whole order</div></div>
+        <div class="stat hero"><div class="v" id="oComm">—</div><div class="l">YOU earn</div></div>
+      </div>
+      <p class="note" id="singleNote"></p>
+      <p class="note">Your public prices always come from the wholesale price sheet — quote from the sheet, never from memory.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="tag">The magic part — repeat orders</div>
+    <p style="margin-bottom:12px">One order is nice. But the real money is customers who order <b>every month</b>. You set them up once, you manage the account, and it pays you again and again. Try it:</p>
+    <div class="grid3">
+      <div class="field"><label>How many customers like this one?</label><input type="number" id="nAcct" min="1" max="50" value="5"></div>
+      <div class="field"><label>How many orders per month (each)?</label><input type="number" id="nReo" min="1" max="8" value="1"></div>
+      <div class="field"><label>&nbsp;</label><div class="stat hero" style="padding:9px"><div class="v" id="oMonthly">—</div><div class="l">You earn per month</div></div></div>
+    </div>
+    <div class="grid3" style="margin-top:6px">
+      <div class="stat"><div class="v">$3,500</div><div class="l">Your base pay / month</div></div>
+      <div class="stat"><div class="v" id="oEarn">—</div><div class="l">Base + commission / month</div></div>
+      <div class="stat"><div class="v" id="oYear">—</div><div class="l">Your commission / year</div></div>
+    </div>
+    <p class="note"><b>How to grow (this is the plan Harold wants):</b> start every new customer SMALL — a 10-item order is an easy yes. Then at their 2nd or 3rd reorder, move them up a level: "the 25-pack drops your price per item." Five small monthly customers beats one giant customer who never says yes.</p>
+  </div>
+</section>
+
+<!-- ================= WHAT WE SELL ================= -->
+<section id="menu">
+  <h2>What we sell — 3 things now, 1 thing next month</h2>
+  <p class="sub">Keep it simple. Right now your bag has exactly three offers in it.</p>
+  <div class="grid3">
+    <div class="card mkt"><span class="tag">✓ Selling now</span><h3>1 · Collagen by itself</h3>
+      <p>Just the healing layer. 5-packs: 2×2 ($32.99), 4×4 ($55), powder ($67.99). For offices that already have their own bandages and tape — they just need the collagen. The <b>powder</b> is our special weapon: it works on deep, odd-shaped wounds that a flat pad can't touch.</p>
+      <p style="margin-top:8px"><b>The collagen money story:</b> collagen is insurance-reimbursable. Offices that bill can use the <b>A-codes</b>: a 2×2 or 4×4 piece pays back about <b>$19–$25</b>, and powder about <b>$40 per gram</b>. We don't touch the billing — THEY bill, THEY collect. We just show them what they can make. (The "we try insurance for you" offer is for SOCKS only — never say it about collagen.)</p></div>
+    <div class="card mkt"><span class="tag">✓ Selling now</span><h3>2 · Collagen kits</h3>
+      <p>Everything for one dressing change in one box (2×2 kit $36.99 · 4×4 kit $59.99 · Wound Kit in 5-set/10-set). And a card to keep in your <b>back pocket for emergencies only</b>: a buyer can pay <b>50% now and the rest in 30 days</b>. Never lead with it — use it only when money is the LAST thing stopping a yes.</p></div>
+    <div class="card mkt"><span class="tag">✓ Selling now</span><h3>3 · Compression sock partnership</h3>
+      <p>The doctor sends patients our way (or sells socks right in the office). <b>We try the patient's insurance first.</b> If insurance says no, the patient pays our partner price: <b>$24 a pair + shipping</b> — instead of $40–$60 at the store. Either way, the patient actually gets their socks. And you manage the account.</p></div>
+  </div>
+  <div class="card" style="border-left:5px solid var(--amber)"><span class="tag" style="color:var(--amber)">⏳ Coming in about 30 days — do NOT sell it yet</span>
+    <h3 style="color:var(--teal);font-size:1.05rem">Silicone foam dressing kit (by itself)</h3>
+    <p style="margin-top:4px">Our own product, priced to beat the big guys. For now, just plant the seed on calls: <i>"Next month I'll have something new for your everyday dressings — I'll bring it to you first."</i> That gives every customer a reason to pick up your NEXT call.</p></div>
+  <div class="band"><b>One rule to never break:</b> never promise that insurance will cover something. The honest line — <i>"we try insurance first; if it's not covered, your patients still get our $24 price"</i> — closes more deals than a promise you can't keep.</div>
+</section>
+
+<!-- ================= WHO WE CALL ================= -->
+<section id="markets">
+  <h2>Who we call — 7 types of customers</h2>
+  <p class="sub">Every card has 4 parts: what they WANT, what HURTS them, what you SELL them, and what you SAY first. The pain part is the most important — you sell by fixing pain.</p>
+  <div class="grid2">
+
+    <div class="card mkt"><h3>🦶 Podiatrists (foot doctors)</h3>
+      <span class="pill gold">Best all-around customer</span><span class="pill">Collagen ✓✓</span><span class="pill">Kits ✓</span><span class="pill">Socks ✓✓</span>
+      <div class="row"><span class="lbl">What they want</span><p>Treat feet well — and make extra money doing it.</p></div>
+      <div class="row"><span class="lbl pain">What hurts them</span><p>Their wound patients get sent to a pharmacy or Amazon for supplies — so the doctor makes $0 on any of it. Patients half the time never even buy the supplies, come back worse, and the doctor gets blamed.</p></div>
+      <div class="row"><span class="lbl">What you sell</span><p>The MAKE-money story, two ways. Cash: they buy our kits and socks at wholesale, sell them in the office at their price, keep the profit. Insurance: offices that bill can use the collagen <b>A-codes</b> — a 2×2 or 4×4 piece reimburses about $19–$25, powder about $40 a gram. We don't do the billing; we just show the math.</p></div>
+      <div class="row"><span class="lbl say">Say first</span><p><i>"How do your wound care patients get their supplies today — do they leave with them, or get sent somewhere?"</i></p></div></div>
+
+    <div class="card mkt"><h3>🩺 Lymphedema, vein &amp; vascular doctors</h3>
+      <span class="pill gold">The #1 target for socks</span><span class="pill">Socks ✓✓</span><span class="pill">Collagen ○</span>
+      <div class="row"><span class="lbl">What they want</span><p>Their patients to actually WEAR compression — for swelling (lymphedema), after vein surgery, and for circulation problems. Compression IS the treatment.</p></div>
+      <div class="row"><span class="lbl pain">What hurts them</span><p>They tell a patient "you need compression socks" — then the patient sees $40–$60 at the store, insurance often says no, and the patient just... skips it. Swelling comes back. Surgery results get worse. The doctor looks bad and can't fix it.</p></div>
+      <div class="row"><span class="lbl">What you sell</span><p>The sock partnership: we try insurance first; if it's a no, their patients pay <b>$24 a pair</b>. Suddenly patients actually buy them and actually wear them. Some offices also stock and sell them directly (more MAKE-money). Sock aids for older patients who can't pull them on.</p></div>
+      <div class="row"><span class="lbl say">Say first</span><p><i>"When you prescribe compression, how many of your patients actually go buy it?"</i> (They know the answer is 'not enough.' That's the whole call.)</p></div></div>
+
+    <div class="card mkt"><h3>🏠 Home health agencies</h3>
+      <span class="pill">Kits ✓✓</span><span class="pill no">NEVER lead with collagen</span><span class="pill">Socks ○</span>
+      <div class="row"><span class="lbl">What they want</span><p>Keep patients stable AT HOME with fewer visits. They are NOT trying to heal wounds fast — that's not their job or their goal.</p></div>
+      <div class="row"><span class="lbl pain">What hurts them</span><p>Nurses show up to a patient's living room and something's missing from the bag. Someone in the office spends half their week ordering from 3 different suppliers. Every nurse's bag is packed differently. Margins per visit are razor thin, and supply chaos eats them alive.</p></div>
+      <div class="row"><span class="lbl">What you sell</span><p>The SAVE-money story: one Wound Care Kit box = a complete dressing change. Every nurse carries the same box. Nothing's ever missing. One order, one invoice, reorders run themselves — you manage it. Collagen only comes up later, when a wound stalls.</p></div>
+      <div class="row"><span class="lbl say">Say first</span><p><i>"How much of your week goes to supply chases and missing items in the field?"</i></p></div></div>
+
+    <div class="card mkt"><h3>🛏️ SNFs (skilled nursing facilities)</h3>
+      <span class="pill">Collagen ✓✓</span><span class="pill">Kits ✓</span><span class="pill">Socks ○</span>
+      <div class="row"><span class="lbl">What they want</span><p>To actually HEAL wounds. State inspectors grade them on it — the opposite of home health.</p></div>
+      <div class="row"><span class="lbl pain">What hurts them</span><p>A wound that won't close is a black mark on their inspection, and can even mean fines or a lawsuit. Stalled wounds are their nightmare.</p></div>
+      <div class="row"><span class="lbl">What you sell</span><p>The healing story: collagen restarts stalled wounds, powder handles the deep ones nothing else fits. Kits keep every change consistent. Talk cost per dressing change, not cost per box.</p></div>
+      <div class="row"><span class="lbl say">Say first</span><p><i>"How many wounds in the building right now have been stuck for over a month?"</i></p></div></div>
+
+    <div class="card mkt"><h3>🚗 Mobile wound care</h3>
+      <span class="pill">Kits ✓✓</span><span class="pill">Collagen ✓</span>
+      <div class="row"><span class="lbl">What they want</span><p>Fast, smooth visits — they treat patients out of a car all day.</p></div>
+      <div class="row"><span class="lbl pain">What hurts them</span><p>Getting to a bedside and realizing the tape or wash is back at the office. Restocking the car is chaos. Time lost = visits lost = money lost.</p></div>
+      <div class="row"><span class="lbl">What you sell</span><p>One kit = one visit, grab and go. Nothing missing, ever. Auto-reorder so the trunk stays stocked. These buyers feel the 5-things-from-5-places pain the hardest — this is your easiest consolidation sell.</p></div>
+      <div class="row"><span class="lbl say">Say first</span><p><i>"What happens when you're at a bedside and something's missing from the car?"</i></p></div></div>
+
+    <div class="card mkt"><h3>🏥 Wound care clinics</h3>
+      <span class="pill">Collagen ✓✓</span><span class="pill">Kits ✓</span><span class="pill">Socks ✓</span>
+      <div class="row"><span class="lbl">What they want</span><p>Depends on the clinic. <b>Well-funded clinics</b> want great results and a premium patient experience. <b>Tight-budget clinics</b> want to stretch every dollar.</p></div>
+      <div class="row"><span class="lbl pain">What hurts them</span><p>Both types juggle several suppliers plus "Amazon when we run out" (which means stockouts AND paying retail). Tight-budget clinics also have patients who can't afford supplies at all — so patients skip care.</p></div>
+      <div class="row"><span class="lbl">What you sell</span><p>Well-funded: premium US-based products + everything in one order. Tight-budget: best total price, $24 socks their patients can actually afford — and if cash is the ONLY blocker, the back-pocket split terms (50% now, rest in 30 days). Ask which kind you're talking to — then pick the story.</p></div>
+      <div class="row"><span class="lbl say">Say first</span><p><i>"How do you buy supplies today — one supplier, or a bit of everywhere?"</i></p></div></div>
+
+  </div>
+  <div class="band"><b>The sorting question — memorize this one:</b> <i>"What's the goal for these patients — healing them fast, or keeping them stable and comfortable?"</i><br><br>If they say <b>healing</b> (SNFs, podiatry, wound clinics) → tell the collagen story. If they say <b>stable</b> (home health) → tell the kit story. If they can <b>sell to patients</b> (podiatry, vein/vascular) → add the MAKE-money story on top. That one question routes every call.</div>
+</section>
+
+<!-- ================= THE QUESTIONS ================= -->
+<section id="disc">
+  <h2>The questions — how you start every call</h2>
+  <p class="sub">You are not calling to pitch. You're calling to find out what's broken. Ask, listen, and they will tell you exactly what to sell them.</p>
+  <p class="hint">Click a card to flip it → say the question OUT LOUD before reading the back.</p>
+  <div class="grid2" id="flashwrap"></div>
+  <div class="band"><b>The listening rules:</b> talk 30%, listen 70%. Write down every supplier name and every price they mention — that's ammo for your next call. Every complaint they say out loud IS your pitch — just repeat it back with our fix. And end every good call with: <i>"Who else do you know that should hear this?"</i></div>
+</section>
+
+<!-- ================= ROLE PLAY ================= -->
+<section id="rp">
+  <h2>Role play — 3 practice calls</h2>
+  <p class="sub">Five decisions per call. Pick what you'd really say. Best answer = 2 points. You need <b>90% or better on each call</b>. Every attempt is logged to Harold's sheet. You can leave a call anytime with the back button.</p>
+  <div id="rpHome">
+    <div class="scene-pick">
+      <div class="card scene-card" onclick="startRP(0)"><h3>🦶 Dr. Patel — Podiatrist</h3><p>Busy foot doctor, 90 seconds between patients. Doesn't sell supplies in-office yet. Your shot at the MAKE-money story.</p><p style="margin-top:8px;color:var(--ocean);font-weight:700" id="rps0">Not played yet</p></div>
+      <div class="card scene-card" onclick="startRP(1)"><h3>🏠 Maria — Home Health Boss</h3><p>Runs 30 field nurses. Buys gauze cheap already. Does NOT want a collagen lecture. Sell the box, not the healing.</p><p style="margin-top:8px;color:var(--ocean);font-weight:700" id="rps1">Not played yet</p></div>
+      <div class="card scene-card" onclick="startRP(2)"><h3>🏥 Chris — Clinic Office Manager</h3><p>Watches every dollar and squeezes every rep on price. Hold your prices, use the 30-day-terms card, get the meeting.</p><p style="margin-top:8px;color:var(--ocean);font-weight:700" id="rps2">Not played yet</p></div>
+    </div>
+  </div>
+  <div id="rpPlay" style="display:none">
+    <div class="card">
+      <div class="rp-top">
+        <button class="btn ghost" onclick="quitRP()">← Back to all 3 calls</button>
+        <span class="tag" id="rpTitle" style="margin:0"></span>
+      </div>
+      <div class="progress"><i id="rpBar" style="width:0%"></i></div>
+      <div class="rp-say" id="rpSay"></div>
+      <p class="rp-ctx" id="rpCtx"></p>
+      <div id="rpOpts"></div>
+      <div class="fb" id="rpFb"></div>
+      <button class="btn" id="rpNext" style="display:none" onclick="rpNext()">Next →</button>
+    </div>
+  </div>
+  <div id="rpDone" style="display:none">
+    <div class="card" style="text-align:center">
+      <div class="tag">Call finished</div>
+      <div class="score-big" id="rpScore"></div>
+      <p id="rpVerdict" style="margin:8px 0 6px"></p>
+      <p class="note" id="rpLogNote" style="margin-bottom:14px"></p>
+      <button class="btn" onclick="quitRP()">← Back to all 3 calls</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= QUIZ ================= -->
+<section id="quiz">
+  <h2>The quiz — prove you're ready</h2>
+  <p class="sub" id="quizSub"></p>
+  <div id="quizwrap"></div>
+  <div class="card" style="text-align:center">
+    <button class="btn" id="gradeBtn" onclick="gradeQuiz()">Grade my quiz</button>
+    <div id="saveStatus"></div>
+    <div id="quizResult" style="margin-top:10px"></div>
+  </div>
+</section>
+
+</main>
+<footer>Ovena Health · Internal training — don't share outside the team · Prices come from the wholesale price sheet. When in doubt, the sheet wins.</footer>
+</div><!-- /app -->
+
+<script>
+const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbwKfxc5kFlne3IKMIoxuM78dqz_qmJmuEnFK10rgzI0-yFlPVPdQ8KPBEFD4VgQpTtkGw/exec";
+
+let USER=null;
+const $=id=>document.getElementById(id);
+function unlock(){
+  $('gate').style.display='none';
+  $('app').style.display='block';
+  $('whoChip').textContent=(USER.name?USER.name+' · ':'')+USER.email;
+}
+function doLogin(){
+  const em=$('loginEmail').value.trim(),nm=$('loginName').value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){
+    $('loginErr').textContent='Please enter a valid email address — Harold uses it to find your scores.';return;
+  }
+  USER={email:em.toLowerCase(),name:nm};
+  localStorage.setItem('ovena_user',JSON.stringify(USER));
+  unlock();
+  logToSheet('login',{},true);
+}
+function logout(){localStorage.removeItem('ovena_user');location.reload();}
+['loginEmail','loginName'].forEach(id=>$(id).addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();}));
+(function(){const raw=localStorage.getItem('ovena_user');
+  if(raw){try{USER=JSON.parse(raw);unlock();}catch(e){}}})();
+
+function logToSheet(type,payload,quiet){
+  if(!USER)return;
+  const st=$('saveStatus');
+  const hasUrl=SHEET_ENDPOINT&&SHEET_ENDPOINT.indexOf('PASTE_')!==0;
+  if(!hasUrl){
+    if(!quiet&&st)st.innerHTML='<span style="color:var(--ok)">⚠ Sheet not connected yet.</span>';
+    return;
+  }
+  if(!quiet&&st)st.innerHTML='⏳ Sending to Harold\'s sheet…';
+  const body=Object.assign({type:type,email:USER.email,name:USER.name||'',ts:new Date().toISOString()},payload);
+  fetch(SHEET_ENDPOINT,{method:'POST',mode:'no-cors',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify(body)})
+  .then(()=>{if(!quiet&&st)st.innerHTML='<b style="color:var(--good)">✔ Saved to Harold\'s sheet.</b> Screenshot too, if you like.';})
+  .catch(()=>{if(!quiet&&st)st.innerHTML='<b style="color:var(--bad)">✘ Couldn\'t reach the sheet.</b> Screenshot your score and text it to Harold.';});
+}
+
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('section').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');document.getElementById(b.dataset.s).classList.add('on');
+  window.scrollTo({top:0});
+}));
+document.querySelectorAll('.check input').forEach(c=>c.addEventListener('change',e=>{
+  e.target.closest('.check').classList.toggle('done',e.target.checked);
+}));
+
+const PRODUCTS=[
+  {n:"Compression socks — $24.99 a pair",s:"pairs of socks",r:24.99},
+  {n:"Collagen 2×2 five-pack — $32.99",s:"2×2 collagen packs",r:32.99},
+  {n:"Collagen 4×4 five-pack — $55.00",s:"4×4 collagen packs",r:55.00},
+  {n:"Collagen powder five-pack — $67.99",s:"powder packs",r:67.99},
+  {n:"Collagen Care Kit 2×2 — $36.99",s:"2×2 kits",r:36.99},
+  {n:"Collagen Care Kit 4×4 — $59.99",s:"4×4 kits",r:59.99},
+];
+const prodSel=document.getElementById('prod');
+PRODUCTS.forEach((p,i)=>prodSel.add(new Option(p.n,i)));
+const fmt=n=>'$'+n.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0});
+const fmt2=n=>'$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+function disc(q){return q>=50?0.20:q>=25?0.15:q>=10?0.10:0;}
+function calc(){
+  const p=PRODUCTS[+prodSel.value],q=+$('qty').value,d=disc(q);
+  const rate=q<=2?0.05:q>=50?0.15:0.12;
+  const unit=p.r*(1-d), total=unit*q, comm=total*rate;
+  $('qtyLab').textContent=q+' items';
+  $('oStory').innerHTML='They buy <b>'+q+' '+p.s+'</b> → they get <b>'+(d*100)+'% off</b> → they pay <b>'+fmt2(unit)+'</b> each → the order is <b>'+fmt(total)+'</b> → you keep '+(rate*100)+'% → <b>you earn '+fmt(comm)+'</b>.';
+  $('oPrice').textContent=fmt2(unit);
+  $('oTotal').textContent=fmt(total);
+  $('oComm').textContent=fmt(comm);
+  $('singleNote').textContent=q<=2?'⚠ This is a tiny order (1–2 boxes), so your cut drops to 5%. We\'ll take the sale — but go find bulk orders instead.':q>=50?'🔥 50+ items — your cut just jumped to 15%. Big orders pay you twice.':'';
+  const rungs=[['1–9','no discount'],['10+','10% off'],['25+','15% off'],['50+','20% off']];
+  const idx=q>=50?3:q>=25?2:q>=10?1:0;
+  $('ladder').innerHTML=rungs.map((r,i)=>'<div class="rung'+(i===idx?' hit':'')+'">'+r[0]+'<br>'+r[1]+'</div>').join('');
+  const nA=+$('nAcct').value||1,nR=+$('nReo').value||1;
+  const monthly=comm*nA*nR;
+  $('oMonthly').textContent=fmt(monthly);
+  $('oEarn').textContent=fmt(3500+monthly);
+  $('oYear').textContent=fmt(monthly*12);
+}
+['prod','qty','nAcct','nReo'].forEach(id=>$(id).addEventListener('input',calc));
+calc();
+
+const CARDS=[
+ ["Question 1 · their patients","“How do you currently treat your wound care patients?”","<b>Why ask it:</b> it opens the whole conversation without pitching anything. Listen for one thing: do patients LEAVE with supplies, or get sent to a pharmacy? If they get sent away, that office is losing money it could keep — that's your MAKE-money story.<br><b>Follow-up:</b> “Do they leave with supplies, or get sent somewhere?”"],
+ ["Question 2 · their suppliers","“Where do your supplies come from today — one supplier, Amazon, a bit of everywhere?”","<b>Why ask it:</b> it tells you who you're competing with, and “a bit of everywhere” is the answer you want to hear — that's 5 orders you can turn into 1 box.<br><b>Do this:</b> write down every supplier name and price they say. That's ammo."],
+ ["Question 3 · their pain","“What runs out, shows up late, or costs more than it should? Who keeps track of all of it?”","<b>Why ask it:</b> whatever they complain about IS your pitch. If someone spends hours ordering from 3 websites, you say: “one order, one box, and I manage the reorders for you.” You're just repeating their complaint back — with a fix."],
+ ["Question 4 · their goal","“What's the goal for these patients — healing them fast, or keeping them stable and comfortable?”","<b>The sorting question.</b> “Healing” (SNFs, podiatry, clinics) → collagen story. “Stable” (home health) → kit story. Never pitch fast healing to a stability buyer — that's how you lose home health in 30 seconds."],
+ ["Question 5 · their patients' wallets","“When insurance won't pay for something like compression socks, what do your patients do?”","<b>Why ask it:</b> almost every doctor answers “honestly, they skip it.” That's your opening: “That's the gap we close. We try insurance first — and when it's a no, your patients pay $24, not $50.” Huge for lymphedema, vein and vascular doctors. <b>Remember: the we-try-insurance offer is for SOCKS only.</b> For collagen, the story is different — they bill the A-codes themselves."],
+ ["Question 6 · the close","“If I could put all of that in ONE order at a better total price — would you give me 15 minutes to show you the numbers?”","<b>Why ask it:</b> it ties everything they just told you into one small, easy yes. Offer two times: “Tuesday or Thursday?” Then add the promise: “And you'd work with me directly — I manage your account personally.”"],
+];
+$('flashwrap').innerHTML=CARDS.map((c,i)=>'<div class="flash" onclick="this.classList.toggle(\'flip\')"><div class="inner"><div class="face front"><div class="t">'+c[0]+'</div><div class="q">'+c[1]+'</div></div><div class="face back"><div>'+c[2]+'</div></div></div></div>').join('');
+
+const RP=[
+ {t:"Call 1 · Dr. Patel — Podiatrist",steps:[
+  {say:"Front desk: “Doctor's with patients. What's this about?”",ctx:"You get one sentence before she filters you out. Make it count.",opts:[
+   ["“Hi! I have an exciting opportunity for the doctor — is he free?”",0,"Filtered instantly. 'Exciting opportunity' = telemarketer. Front desks hear this 20 times a day."],
+   ["“Quick question — who handles wound care supply ordering for the practice? I may be able to cut what you're paying, and I'll be fast.”",2,"You gave her a real reason and asked for a real person. Front desks route problems to whoever owns them — you just asked for that person."],
+   ["“I'm Alexis with Ovena, a wound care supplier. Could I leave a message for Dr. Patel?”",1,"Polite, but messages die. Better to find the person who orders supplies and talk to them right now."]]},
+  {say:"Dr. Patel picks up: “You've got 90 seconds. Go.”",ctx:"He's a foot doctor — remember, podiatrists can SELL our stuff to their patients.",opts:[
+   ["“We sell FDA-cleared type I bovine collagen in 2×2, 4×4 and powder formats, plus kits and compression…”",0,"Product dump. He didn't ask what you sell — he wants to know why he should care. Clock's ticking."],
+   ["“I'll be quick — I know supplies aren't where you make your money. Quick question: how do your wound care patients get their supplies today — do they leave with them, or get sent somewhere?”",2,"You opened with his reality, then asked THE question. Whatever he answers writes your next line for you."],
+   ["“We have the best prices on collagen. Want me to email a catalog?”",1,"Price-only, and it invites 'sure, email it' — which is the polite version of hanging up."]]},
+  {say:"“We write prescriptions. Patients get supplies wherever — pharmacy, Amazon, whatever they figure out.”",ctx:"There it is: money walking out his door every day.",opts:[
+   ["“That works! And our website is cheaper than Amazon for them.”",1,"True, but tiny. You just skipped the biggest number on this call — the money HE could be making."],
+   ["“So every wound patient is money walking out your door. Here's what our podiatry partners do: buy kits and socks from us at wholesale, sell them right in the office at your price, keep the profit — and the patient leaves with everything, same day. Want to see that math?”",2,"The MAKE-money story, told in HIS interest, ending with a question. This is the pitch foot doctors actually want to hear."],
+   ["“You should stock our collagen — patients love it.”",0,"'Patients love it' is not a business reason. Tell him what HE gets: profit, convenience, same-day supply."]]},
+  {say:"“What about compression socks — will my patients' insurance cover those?”",ctx:"Careful. Answer wrong and you either lie or kill the deal.",opts:[
+   ["“Yes, insurance covers them.”",0,"NEVER promise coverage. The first denied claim destroys your credibility — and the account with it."],
+   ["“Honestly? Sometimes. As your partner we try insurance first. When it's a no, your patients pay our partner price — $24 a pair plus shipping, instead of $40–60 at the store. Either way they walk out of your office with socks, same day.”",2,"Honest, specific, and it wins both ways — covered or not, the patient gets socks and the doctor looks good."],
+   ["“No — but they're cheap, only $24.”",1,"Right price, but you threw away half the story. 'We try insurance first' is what makes it a partnership."]]},
+  {say:"“Okay, interesting. What now?”",ctx:"Close it — but size the ask right. He's busy.",opts:[
+   ["“Let's start you with our 50-unit package — biggest discount.”",0,"Way too big for a first order. Big first asks stall deals. Start small, upgrade later — that's our whole model."],
+   ["“I'll email you our catalog and pricing to look over.”",1,"You had him LIVE and traded it for an email he'll never open. Always turn interest into a calendar slot."],
+   ["“Give me 15 minutes with the numbers — your cost, your patient price, your profit per sale. Tuesday or Thursday? And you'd work directly with me — I manage your account and reorders personally.”",2,"Small ask, two time options, and the account-manager promise. That's the close."]]}]},
+ {t:"Call 2 · Maria — Home Health Boss",steps:[
+  {say:"Maria: “I've got a meeting in five minutes. What is it?”",ctx:"Home health. 30 field nurses. Rule one: do NOT lead with collagen.",opts:[
+   ["“We make collagen dressings that restart stalled wounds — huge for healing outcomes.”",0,"Wrong story for this buyer. Home health wants stable patients and fewer headaches — not fast healing. You just became every clinical rep she dodges."],
+   ["“Two minutes, promise. We put a complete dressing change — foam dressing, roll gauze, wound wash, tape, gloves — in ONE box, cheaper than buying the five things separately. Agencies use it so every nurse's bag is packed the same. Worth a look?”",2,"The SAVE-money story in her language: the box, the bag, the five things. That's home health."],
+   ["“We're a premium US-based wound care supplier — I'd love to introduce Ovena.”",1,"Fine, but generic. 'Premium supplier' doesn't survive a 5-minute window. Lead with the box."]]},
+  {say:"“Our problem isn't dressings. My nurses are spread thin, and half my week is supply chases and missing items in the field.”",ctx:"She just handed you her pain. Repeat it back — with your fix.",opts:[
+   ["“That's exactly why the kit exists: every nurse carries the same box, nothing's missing in a patient's living room, and reorders run themselves — I manage them. Fewer supply chases is literally the product.”",2,"You repeated her complaint back with the fix attached. She's not buying wound care — she's buying her week back."],
+   ["“Our collagen can speed up healing, which means fewer visits per patient.”",0,"Still pushing collagen at a stability buyer. She TOLD you the problem is logistics, not healing speed. Listen."],
+   ["“We have great bulk pricing that would save you money.”",1,"Price matters, but she led with chaos, not cost. Fix the chaos first — then the price lands harder."]]},
+  {say:"“We already buy gauze for pennies from our distributor.”",ctx:"The classic objection. Don't argue about gauze.",opts:[
+   ["“Our gauze is higher quality than theirs.”",0,"Arguing gauze is a losing fight — and it accepts her framing. Gauze was never the point."],
+   ["“Gauze, sure. But add the dressing, tape, wash and gloves — that's five things, shipping on each, and someone tracking it all. What does a COMPLETE dressing change cost you, delivered? If I beat that with one box, would you try a small pack with two nurses?”",2,"You moved the fight from 'price of gauze' to 'cost of the whole change' — a fight we win — and ended with a tiny ask."],
+   ["“I can probably beat their pricing — want a quote?”",1,"You're negotiating against a number you haven't even seen yet. Get her total cost per change first."]]},
+  {say:"“Maybe. Send me some info and I'll look when things calm down.”",ctx:"The polite brush-off. 'Send info' with no next step = a no.",opts:[
+   ["“Sure! What's your email?”",0,"That info dies in her inbox and you both know it. Never accept 'send info' without booking the follow-up."],
+   ["“Absolutely — one page, not a brochure. And so it doesn't sit in your inbox: can I grab ten minutes Thursday to walk through the numbers? If we're not cheaper than what you pay now, I'll tell you so myself.”",2,"Send the info AND book the slot — plus that last line ('I'll tell you myself') builds instant trust with a busy boss."],
+   ["“Things never calm down though, right? Let's just do it now.”",1,"Right instinct, but you're steamrolling her 5-minute warning. Book the near-term slot instead."]]},
+  {say:"Thursday's call: “Okay, the math works. How do we start?”",ctx:"Size the first order the way our model says.",opts:[
+   ["“Most agencies start with the large pack — best per-unit price.”",1,"True on paper, but a big first order slows down the yes. The discount ladder rewards her at reorder time — save it for then."],
+   ["“Small pack, two nurses, this month. If their supply chases drop, we roll it out to the whole team — and the bigger pack drops your cost per change. I'll check in with you personally at week two.”",2,"Small, low-risk, measurable, with the upgrade path built in. Start small and grow — exactly our model."],
+   ["“I'll have our team send a contract for a standing monthly order.”",0,"A contract before she's seen the kit in the field? Too much, too fast. Pilot first."]]}]},
+ {t:"Call 3 · Chris — Clinic Office Manager",steps:[
+  {say:"Chris: “We're pretty locked in with McKesson. Why should I even take this call?”",ctx:"Wound clinic. Watches every dollar. Earn the next 60 seconds.",opts:[
+   ["“Because we're cheaper than McKesson.”",1,"Maybe true — but a bare price claim before any discovery invites 'prove it' before you know what he pays."],
+   ["“Fair question. Before I claim anything — how do you actually buy today? Everything through McKesson, or do dressings, wash and tape come from different places?”",2,"Ask before you claim. 'Locked in' usually means 'locked into a mess' — go find the mess."],
+   ["“McKesson's a giant — we're a premium boutique alternative.”",0,"To a guy who watches every dollar, 'boutique' means 'expensive.' Wrong word, wrong buyer."]]},
+  {say:"“Mostly McKesson, some Amazon when we run out. Why?”",ctx:"'Amazon when we run out' = they run out AND pay retail. That's your opening.",opts:[
+   ["“Because 'Amazon when we run out' is the expensive way. What does a complete dressing change cost you, delivered — dressing, gauze, wash, tape, gloves, shipping? Our kit is one item, one price, auto-reordered so 'we ran out' stops happening. Worth comparing?”",2,"You caught the tell and turned it into total-cost math plus the auto-reorder fix. Strong."],
+   ["“We can be your backup when McKesson runs out!”",0,"You just pitched yourself into the Amazon slot — the occasional, retail-priced backup. Aim at the MAIN spend."],
+   ["“Amazon's pricing is retail — we're wholesale. Want a price list?”",1,"Right direction, but a bare price list lets him compare item-by-item — the game the big distributor wins. Compare cost per CHANGE."]]},
+  {say:"“Look, everyone says they're cheaper. Give me 30% off and we'll talk.”",ctx:"The squeeze. Your ladder tops out at 20% off at 50+ items.",opts:[
+   ["“Deal — 30% off if you order today.”",0,"You just invented a discount that doesn't exist and torched our pricing. NEVER make up a price on the phone."],
+   ["“I'll be straight with you: it's 10% off at 10 items, 15% at 25, 20% at 50 — and that 20% is the floor. Anything deeper only comes with a standing monthly order, and that's my boss's call. Want me to ask him today?”",2,"You showed the ladder, held the floor, and gave him a real path to more (standing order, through Harold). Squeezers respect a straight answer."],
+   ["“Sorry, 30% isn't possible. 20% is our max.”",1,"You held the line — good — but you closed the door instead of opening the standing-order path. Always give a squeezer a way to win."]]},
+  {say:"“Money's tight this quarter. Big orders are hard for us right now.”",ctx:"This is the ONE moment for your emergency back-pocket card. Money is the last thing blocking the deal.",opts:[
+   ["“Then start with just a few units.”",1,"Works — but this was the one right moment for the back-pocket card, and you left it in your pocket."],
+   ["“For situations exactly like this, I can do split terms: 50% now, the other half in 30 days. Order what the clinic needs, not what the checkbook allows this week. I'd just need to get you approved with my team first.”",2,"The emergency card, played at the ONLY right moment — money was the last blocker. 50% now, rest in 30 days, with the honest 'approval needed' caveat. Never open a call with this; it loses all its power."],
+   ["“Maybe we should wait until next quarter then?”",0,"You just postponed your own deal. Money-is-tight has an answer — the split-terms card. Use it."]]},
+  {say:"“Alright, you've earned 15 minutes. Book it. Anything else?”",ctx:"Meeting won. One more move before you hang up.",opts:[
+   ["“Nope, that's everything — see you Tuesday!”",1,"Clean close, but you left the multiplier on the table. Every good call ends with the referral ask."],
+   ["“One thing — you talk to other clinic managers. Who else do you know that's juggling supplies from three places? An intro is the biggest favor you could do me, and I'll take care of them the way I'll take care of you.”",2,"The referral ask, framed as a favor with a service promise. This is how one good call becomes three."],
+   ["“Yes — could you commit to an order size before the meeting?”",0,"Pushy and backwards. The meeting is where the order gets sized. Don't make his yes feel like a trap."]]}]}
+];
+let rpS=0,rpI=0,rpPts=0;const rpBest=[null,null,null];
+function startRP(s){rpS=s;rpI=0;rpPts=0;
+  document.getElementById('rpHome').style.display='none';
+  document.getElementById('rpDone').style.display='none';
+  document.getElementById('rpPlay').style.display='block';
+  renderStep();}
+function renderStep(){
+  const sc=RP[rpS],st=sc.steps[rpI];
+  document.getElementById('rpTitle').textContent=sc.t+' · Decision '+(rpI+1)+' of '+sc.steps.length;
+  document.getElementById('rpBar').style.width=(rpI/sc.steps.length*100)+'%';
+  document.getElementById('rpSay').innerHTML='<span class="who2">They say</span>'+st.say;
+  document.getElementById('rpCtx').textContent=st.ctx;
+  const shuffled=st.opts.map((o,i)=>i).sort(()=>Math.random()-0.5);
+  document.getElementById('rpOpts').innerHTML=shuffled.map(i=>'<button class="opt" onclick="pick(this,'+i+')">'+st.opts[i][0]+'</button>').join('');
+  document.getElementById('rpFb').className='fb';document.getElementById('rpNext').style.display='none';}
+function pick(el,i){
+  const st=RP[rpS].steps[rpI],q=st.opts[i][1];
+  rpPts+=q;
+  document.querySelectorAll('#rpOpts .opt').forEach(b=>b.disabled=true);
+  el.classList.add('picked-'+q);
+  const fb=document.getElementById('rpFb');
+  fb.className='fb show '+(q===2?'g':q===1?'o':'b');
+  fb.innerHTML='<b>'+(q===2?'✔ Best move (+2). ':q===1?'△ Okay (+1). ':'✘ Miss (+0). ')+'</b>'+st.opts[i][2];
+  document.getElementById('rpNext').style.display='inline-block';}
+function rpNext(){rpI++;
+  if(rpI<RP[rpS].steps.length){renderStep();return;}
+  const max=RP[rpS].steps.length*2,pct=Math.round(rpPts/max*100);
+  if(rpBest[rpS]===null||pct>rpBest[rpS])rpBest[rpS]=pct;
+  logToSheet('roleplay',{scene:RP[rpS].t,score:rpPts,total:max,pct:pct+'%',
+    passed:pct>=88?'PASS':'FAIL',
+    notes:'session best '+rpBest[rpS]+'%'},true);
+  document.getElementById('rpPlay').style.display='none';
+  document.getElementById('rpDone').style.display='block';
+  document.getElementById('rpScore').textContent=rpPts+' / '+max+' · '+pct+'%';
+  document.getElementById('rpLogNote').textContent=SHEET_ENDPOINT.indexOf('PASTE_')!==0?'This attempt was logged to Harold\'s sheet.':'';
+  document.getElementById('rpVerdict').innerHTML=pct>=88?'<b style="color:var(--good)">Call-ready. ✔</b> Go play the next one.':pct>=70?'<b style="color:var(--ok)">Close.</b> Re-read the feedback on your misses, then play it again — you need 88%+.':'<b style="color:var(--bad)">Play it again.</b> Re-read "Who We Call" and "The Questions" first — every answer lives in those two tabs.';}
+function quitRP(){
+  document.getElementById('rpPlay').style.display='none';
+  document.getElementById('rpDone').style.display='none';
+  document.getElementById('rpHome').style.display='block';
+  rpBest.forEach((b,i)=>{if(b!==null)document.getElementById('rps'+i).textContent='Best score: '+b+'%'+(b>=88?' ✔':' — play again');});}
+
+const QUIZ=[
+ ["Your commission is a percent of…",["The full retail price","The discounted price the customer actually pays","Ovena's profit on the order"],1,"You get paid on what the customer actually pays (after their discount)."],
+ ["A customer buys just 1 or 2 boxes. Your cut is…",["Your normal level","Zero","5%"],2,"We'll sell 1 or 2 boxes — but tiny orders pay you 5%. Don't chase them; hunt bulk orders that repeat."],
+ ["A foot doctor orders 25 pairs of socks. Their discount is…",["10%","15%","20%"],1,"The ladder: 10% off at 10+, 15% off at 25+, 20% off at 50+. So 25 pairs = 15% off."],
+ ["An order hits 50+ items. Your cut…",["Stays at 12%","Jumps to 15%","Drops — big discounts mean less for you"],1,"Big orders pay you twice: the order total is bigger AND your percent jumps from 12% to 15% at 50+ items."],
+ ["What do we do about insurance for COLLAGEN?",["We try insurance for the patient, like with socks","Nothing — we tell the office the A-codes and what they reimburse (2×2/4×4 ≈ $19–$25 a piece, powder ≈ $40/gram), and THEY bill it","We bill Medicare for them"],1,"The we-try-insurance offer is socks only. For collagen, we just show offices the A-code math — what they could make if they bill — and they handle everything else."],
+ ["Calling a home health agency, you lead with…",["Collagen — the healing story","The Wound Care Kit — same box in every nurse's bag, nothing missing, one order","Compression socks"],1,"Home health wants stable patients and fewer headaches — not fast healing. Collagen only comes up when a wound is stuck."],
+ ["A SNF (skilled nursing facility) cares most about…",["The lowest possible price","Actually healing wounds — inspectors grade them on it","Selling products to patients"],1,"SNFs get graded on wound healing. For them, healing IS the product — the opposite of home health."],
+ ["Which doctors are the #1 target for compression socks?",["Dermatologists","Lymphedema, vein and vascular doctors (and podiatrists)","Dentists"],1,"Compression IS the treatment for lymphedema, vein surgery recovery, and circulation problems. Their big pain: patients skip $50 store socks — our $24 price fixes that."],
+ ["A partner's patient gets denied by insurance for socks. The patient…",["Pays $24.99 retail plus tax","Pays $24 a pair, plus shipping","Pays nothing — we bill Medicare"],1,"We try insurance first. If it's a no, the partner price is $24 a pair + shipping (vs $40–60 in stores). We do NOT bill Medicare — we're a cash business."],
+ ["A buyer demands 30% off. You…",["Give it to them — a deal's a deal","Show the ladder (tops at 20% at 50+), offer the standing-order path, and check with Harold the same day","Hang up"],1,"Never make up a price. The ladder is the ladder. Deeper discounts only come with a standing monthly order — and that's Harold's call."],
+ ["The right size for a FIRST order is…",["The 50+ pack — biggest discount for them","Small — an easy yes now, then upgrade the pack size at reorder #2 or #3","Whatever they'll sign"],1,"Start small and grow. Small first orders close fast, and the ladder gives customers a reason to size up later."],
+ ["What are you selling THIS month?",["Collagen, collagen kits, and compression socks — that's the whole bag","Everything, including the new silicone foam kit","Only compression socks"],0,"The stand-alone silicone foam kit is about 30 days away. Tease it ('next month I'll have something new for you') — but don't sell it yet."],
+ ["The MAKE-money story for foot doctors is…",["Our collagen heals faster than the competition","They buy from us at wholesale, sell to patients at their own price, and keep the profit","We give doctors a personal discount"],1,"Buy wholesale, sell at their price, keep the profit — and the patient walks out with everything, same day. That's the pitch."],
+ ["Your best opening question on a call is…",["“Can I tell you about Ovena?”","“How do you currently treat your wound care patients?”","“What's your supply budget?”"],1,"Open with THEIR world, not our products. Their answer tells you which story to tell. Budget questions come later."],
+ ["After a customer signs up, who takes care of them?",["Harold","A customer service line","You — you're their account manager"],2,"You own the account: reorders, check-ins, upgrades. That's also where your monthly commission keeps coming from."],
+];
+document.getElementById('quizSub').textContent=QUIZ.length+' questions. Answer them all and hit Grade — your score is sent to Harold\'s sheet automatically.';
+document.getElementById('quizwrap').innerHTML=QUIZ.map((q,i)=>'<div class="card"><div class="qnum">QUESTION '+(i+1)+' OF '+QUIZ.length+'</div><p class="qq">'+q[0]+'</p>'+q[1].map((o,j)=>'<button class="opt" data-q="'+i+'" data-o="'+j+'" onclick="qPick(this)">'+o+'</button>').join('')+'<div class="fb" id="qfb'+i+'"></div></div>').join('');
+const qAns=new Array(QUIZ.length).fill(null);
+function qPick(el){const i=+el.dataset.q;qAns[i]=+el.dataset.o;
+  document.querySelectorAll('[data-q="'+i+'"]').forEach(b=>{b.classList.remove('picked-2');});
+  el.classList.add('picked-2');}
+function bumpAttempt(){
+  const k='ovena_att_'+(USER?USER.email:'anon');
+  const n=(+localStorage.getItem(k)||0)+1;
+  localStorage.setItem(k,n);return n;}
+function gradeQuiz(){
+  $('gradeBtn').disabled=true;
+  let right=0;
+  QUIZ.forEach((q,i)=>{
+    const fb=document.getElementById('qfb'+i);
+    if(qAns[i]===null){fb.className='fb show o';fb.innerHTML='<b>You skipped this one.</b>';return;}
+    const ok=qAns[i]===q[2];if(ok)right++;
+    fb.className='fb show '+(ok?'g':'b');
+    fb.innerHTML='<b>'+(ok?'✔ Correct. ':'✘ Not quite. ')+'</b>'+q[3];
+    document.querySelectorAll('[data-q="'+i+'"]').forEach(b=>{b.disabled=true;if(+b.dataset.o===q[2])b.classList.add('picked-2');else if(+b.dataset.o===qAns[i]&&!ok){b.classList.remove('picked-2');b.classList.add('picked-0');}});
+  });
+  const pct=Math.round(right/QUIZ.length*100);
+  const attempt=bumpAttempt();
+  const answers=QUIZ.map((q,i)=>qAns[i]===null?'—':'ABC'[qAns[i]]);
+  logToSheet('quiz',{score:right,total:QUIZ.length,pct:pct+'%',
+    passed:pct>=88?'PASS':'FAIL',attempt:attempt,answers:answers,rpBest:rpBest.slice()});
+  document.getElementById('quizResult').innerHTML='<div class="score-big">'+right+' / '+QUIZ.length+'</div><div class="result-badge">'+pct+'% · attempt #'+attempt+' — '+(pct>=88?'Call-ready. 🎉':pct>=70?'Almost there — check your misses and retake.':'Go back through the tabs, then retake.')+'</div><br><button class="btn ghost" style="margin-top:10px" onclick="resetQuiz()">Retake the quiz</button>';
+  window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});}
+function resetQuiz(){
+  qAns.fill(null);
+  document.querySelectorAll('#quizwrap .opt').forEach(b=>{b.disabled=false;b.classList.remove('picked-2','picked-0');});
+  QUIZ.forEach((q,i)=>{document.getElementById('qfb'+i).className='fb';});
+  document.getElementById('quizResult').innerHTML='';
+  document.getElementById('saveStatus').innerHTML='';
+  document.getElementById('gradeBtn').disabled=false;
+  window.scrollTo({top:0});}
+</script>
+</body>
+</html>
