@@ -3,638 +3,680 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ovena · Week 2 Self-Training</title>
+<title>Ovena Health: Appointment Setter Training</title>
 <style>
-  :root{
-    --teal:#17434B; --ocean:#2A6F7F; --deep:#0F3238; --ice:#EAF4F5; --pale:#F2F7F8;
-    --mist:#BFD8DC; --mute:#6E8A90; --body:#2E4A50; --white:#fff; --amber:#C8871E;
-    --good:#2E7D5B; --bad:#B04A3A; --ok:#C8871E;
-  }
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--pale);color:var(--body);line-height:1.55}
-  header{background:linear-gradient(135deg,var(--deep),var(--teal) 60%,var(--ocean));color:var(--white);padding:28px 24px 20px}
-  header .wrap,main{max-width:1060px;margin:0 auto}
-  header h1{font-size:1.5rem;font-weight:700;letter-spacing:.2px}
-  header p{color:var(--mist);margin-top:4px;font-size:.95rem}
-  .who{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:22px;
-       padding:7px 15px;font-size:.82rem;color:#fff;white-space:nowrap}
-  .who a{color:var(--mist);margin-left:9px;text-decoration:underline;cursor:pointer}
-  .who a:hover{color:#fff}
-  nav{position:sticky;top:0;z-index:9;background:var(--teal);box-shadow:0 2px 10px rgba(15,50,56,.25)}
-  nav .wrap{max-width:1060px;margin:0 auto;display:flex;flex-wrap:wrap}
-  nav button{background:none;border:none;color:var(--mist);padding:13px 15px;font-size:.9rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent}
-  nav button:hover{color:#fff}
-  nav button.on{color:#fff;border-bottom-color:var(--amber)}
-  main{padding:26px 20px 60px}
-  section{display:none}
-  section.on{display:block;animation:fade .25s ease}
-  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-  h2{color:var(--teal);font-size:1.35rem;margin-bottom:6px}
-  .sub{color:var(--mute);margin-bottom:20px;font-size:.95rem}
-  .card{background:#fff;border-radius:14px;padding:20px 22px;box-shadow:0 3px 14px rgba(23,67,75,.08);margin-bottom:16px}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-  @media(max-width:800px){.grid2,.grid3{grid-template-columns:1fr}}
-  .tag{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:1.2px;color:var(--ocean);text-transform:uppercase;margin-bottom:6px}
-  .band{background:var(--teal);color:var(--ice);border-radius:14px;padding:18px 22px;margin:16px 0}
-  .band b{color:#fff}
-  ul.tight{margin:8px 0 0 18px}
-  ul.tight li{margin-bottom:6px}
-  .btn{background:var(--ocean);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:.95rem;font-weight:600;cursor:pointer}
-  .btn:hover{background:var(--teal)}
-  .btn:disabled{opacity:.55;cursor:not-allowed}
-  .btn.ghost{background:var(--ice);color:var(--teal)}
-  .daylbl{display:inline-block;background:var(--amber);color:#fff;border-radius:7px;padding:3px 12px;font-size:.8rem;font-weight:700;letter-spacing:1px;margin-bottom:10px}
-  .check{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1.5px solid var(--ice);border-radius:10px;margin-bottom:10px;cursor:pointer}
-  .check input{margin-top:4px;accent-color:var(--ocean);width:17px;height:17px}
-  .check.done{background:var(--ice)}
-  .steplbl{display:inline-block;background:var(--teal);color:#fff;border-radius:6px;padding:2px 10px;font-size:.75rem;font-weight:700;letter-spacing:1px;margin-bottom:6px}
-  .field{margin-bottom:16px}
-  .field label{display:block;font-size:.9rem;font-weight:600;color:var(--body);margin-bottom:5px}
-  select,input[type=number]{width:100%;padding:10px 12px;border:1.5px solid var(--mist);border-radius:9px;font-size:1rem;color:var(--body);background:#fff}
-  input[type=range]{width:100%;accent-color:var(--ocean)}
-  .stat{background:var(--ice);border-radius:11px;padding:14px 16px;text-align:center}
-  .stat .v{font-size:1.5rem;font-weight:700;color:var(--teal)}
-  .stat .l{font-size:.75rem;font-weight:700;letter-spacing:.8px;color:var(--mute);text-transform:uppercase;margin-top:3px}
-  .stat.hero{background:var(--teal)}
-  .stat.hero .v{color:#fff}
-  .stat.hero .l{color:var(--mist)}
-  .story{background:var(--ice);border-left:5px solid var(--ocean);border-radius:0 12px 12px 0;padding:16px 18px;font-size:1.05rem;margin-bottom:14px}
-  .story b{color:var(--teal)}
-  .ladder{display:flex;gap:8px;margin:10px 0 4px}
-  .rung{flex:1;text-align:center;padding:9px 4px;border-radius:9px;background:var(--pale);border:1.5px solid var(--mist);font-size:.8rem;color:var(--mute)}
-  .rung.hit{background:var(--ocean);border-color:var(--ocean);color:#fff;font-weight:700}
-  .note{font-size:.85rem;color:var(--mute);font-style:italic;margin-top:10px}
-  .mkt{border-left:5px solid var(--ocean)}
-  .mkt h3{color:var(--teal);font-size:1.05rem;margin-bottom:4px}
-  .mkt .row{margin-top:8px}
-  .mkt .lbl{font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ocean)}
-  .mkt .lbl.pain{color:var(--bad)}
-  .mkt .lbl.say{color:var(--amber)}
-  .mkt p{font-size:.9rem}
-  .pill{display:inline-block;background:var(--ice);color:var(--teal);border-radius:20px;padding:3px 11px;font-size:.75rem;font-weight:700;margin:2px 3px 2px 0}
-  .pill.no{background:#F6E9E6;color:var(--bad)}
-  .pill.gold{background:#F7EEDD;color:var(--amber)}
-  .flash{perspective:900px;cursor:pointer;height:200px}
-  .flash .inner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
-  .flash.flip .inner{transform:rotateY(180deg)}
-  .face{position:absolute;inset:0;backface-visibility:hidden;border-radius:14px;padding:18px;display:flex;flex-direction:column;justify-content:center}
-  .face.front{background:var(--teal);color:#fff}
-  .face.front .q{font-size:1.02rem;font-style:italic}
-  .face.front .t{font-size:.7rem;letter-spacing:1.2px;color:var(--mist);text-transform:uppercase;margin-bottom:8px;font-weight:700}
-  .face.back{background:#fff;border:1.5px solid var(--mist);transform:rotateY(180deg);color:var(--body);font-size:.87rem;overflow:auto}
-  .face.back b{color:var(--ocean)}
-  .hint{text-align:center;color:var(--mute);font-size:.82rem;margin-bottom:14px}
-  .scene-pick{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-  @media(max-width:800px){.scene-pick{grid-template-columns:1fr}}
-  .scene-card{cursor:pointer;border:2px solid transparent;transition:.15s}
-  .scene-card:hover{border-color:var(--ocean);transform:translateY(-2px)}
-  .scene-card h3{color:var(--teal);font-size:1rem;margin-bottom:5px}
-  .scene-card p{font-size:.86rem;color:var(--mute)}
-  .rp-say{background:var(--ice);border-left:5px solid var(--ocean);border-radius:0 12px 12px 0;padding:14px 18px;margin-bottom:6px;font-style:italic;color:var(--teal)}
-  .rp-say .who2{font-style:normal;font-weight:700;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;color:var(--ocean);display:block;margin-bottom:4px}
-  .rp-ctx{font-size:.85rem;color:var(--mute);margin:0 0 14px 4px}
-  .opt{display:block;width:100%;text-align:left;background:#fff;border:1.5px solid var(--mist);border-radius:11px;padding:13px 16px;margin-bottom:9px;font-size:.92rem;color:var(--body);cursor:pointer}
-  .opt:hover{border-color:var(--ocean);background:var(--pale)}
-  .opt.picked-2{border-color:var(--good);background:#EAF5F0}
-  .opt.picked-1{border-color:var(--ok);background:#FAF3E4}
-  .opt.picked-0{border-color:var(--bad);background:#F9EDEA}
-  .fb{border-radius:11px;padding:13px 16px;margin:4px 0 14px;font-size:.9rem;display:none}
+  :root{--navy:#0f2a44;--teal:#1b8a8a;--teal-d:#136a6a;--bg:#f4f7f9;--card:#fff;--ink:#1c2630;--mute:#5d6b78;--line:#dfe6ec;--ok:#1f8f4e;--bad:#c23b3b;--warn:#b7791f;--gold:#f3e8c7}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  header{background:var(--navy);color:#fff;padding:18px 22px;position:sticky;top:0;z-index:20;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+  header h1{margin:0;font-size:20px;letter-spacing:.2px}
+  header p{margin:4px 0 0;font-size:13px;opacity:.85}
+  .wrap{max-width:980px;margin:0 auto;padding:20px 16px 80px}
+  nav{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 22px}
+  nav button{border:1px solid var(--line);background:#fff;color:var(--navy);padding:8px 12px;border-radius:999px;font-size:13px;cursor:pointer;font-weight:600}
+  nav button.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+  nav button.done::after{content:" ✓";color:var(--ok)}
+  nav button.active.done::after{color:#fff}
+  section.mod{display:none}
+  section.mod.active{display:block;animation:fade .25s}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:16px}
+  h2{margin:0 0 6px;font-size:22px;color:var(--navy)}
+  h3{margin:22px 0 8px;font-size:16px;color:var(--teal-d);text-transform:uppercase;letter-spacing:.6px}
+  h4{margin:16px 0 6px;font-size:15px}
+  .time{font-size:13px;color:var(--mute);margin-bottom:12px}
+  .say{background:#eef7f7;border-left:4px solid var(--teal);padding:12px 14px;border-radius:0 8px 8px 0;margin:10px 0;font-weight:600;color:#0e3d3d}
+  .say small{display:block;font-weight:400;color:var(--mute);margin-bottom:4px;text-transform:uppercase;font-size:11px;letter-spacing:.6px}
+  .do{background:#fff8e6;border-left:4px solid var(--warn);padding:10px 14px;border-radius:0 8px 8px 0;margin:10px 0;font-size:14px}
+  .never{background:#fdeeee;border-left:4px solid var(--bad);padding:10px 14px;border-radius:0 8px 8px 0;margin:10px 0;font-size:14px}
+  .rule{background:var(--gold);border-radius:8px;padding:10px 14px;margin:10px 0;font-size:14px}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:10px 0}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:#eef2f5;color:var(--navy)}
+  ul,ol{padding-left:22px}li{margin:4px 0}
+  .branch{margin:8px 0 8px 10px;padding-left:12px;border-left:2px dashed var(--line)}
+  .branch b{color:var(--navy)}
+  .pill{display:inline-block;background:#e6f2f2;color:var(--teal-d);border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700;margin-right:6px}
+  .btn{background:var(--teal);color:#fff;border:0;padding:10px 18px;border-radius:8px;font-weight:700;cursor:pointer;font-size:14px}
+  .btn.sec{background:#fff;color:var(--navy);border:1px solid var(--line)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+  input[type=text],input[type=email]{padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;min-width:240px}
+  /* gate */
+  #gate{position:fixed;inset:0;background:rgba(15,42,68,.96);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
+  #gate .card{max-width:440px;width:100%}
+  /* flashcards */
+  .fc{border:1px solid var(--line);border-radius:12px;padding:18px;background:#fff;cursor:pointer;min-height:140px;display:flex;flex-direction:column;justify-content:center;transition:.15s}
+  .fc:hover{border-color:var(--teal)}
+  .fc .q{font-weight:700;font-size:16px;color:var(--navy)}
+  .fc .a{display:none;margin-top:12px;color:#0e3d3d;background:#eef7f7;padding:10px 12px;border-radius:8px;font-size:14px}
+  .fc.open .a{display:block}
+  .fc .hint{font-size:12px;color:var(--mute);margin-top:8px}
+  .fcnav{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:13px;color:var(--mute)}
+  /* roleplay */
+  .scene{background:#f7f9fb;border:1px solid var(--line);border-radius:10px;padding:14px;margin:12px 0}
+  .them{font-style:italic;color:#333;margin-bottom:10px}
+  .them::before{content:"They say: ";font-style:normal;font-weight:700;color:var(--navy)}
+  .opt{display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:6px 0;cursor:pointer;font-size:14px}
+  .opt:hover{border-color:var(--teal)}
+  .opt.right{border-color:var(--ok);background:#eaf6ee}
+  .opt.wrong{border-color:var(--bad);background:#fbecec}
+  .opt:disabled{cursor:default}
+  .fb{margin-top:8px;font-size:14px;padding:10px 12px;border-radius:8px;display:none}
   .fb.show{display:block}
-  .fb.g{background:#EAF5F0;border-left:5px solid var(--good)}
-  .fb.o{background:#FAF3E4;border-left:5px solid var(--ok)}
-  .fb.b{background:#F9EDEA;border-left:5px solid var(--bad)}
-  .progress{height:8px;background:var(--ice);border-radius:6px;overflow:hidden;margin-bottom:18px}
-  .progress i{display:block;height:100%;background:var(--ocean);transition:width .3s}
-  .score-big{font-size:2.4rem;font-weight:800;color:var(--teal);text-align:center}
-  .rp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-  .qq{margin-bottom:4px;font-weight:600;color:var(--teal)}
-  .qnum{color:var(--mute);font-weight:700;font-size:.78rem;letter-spacing:1px}
-  .result-badge{display:inline-block;border-radius:20px;padding:6px 18px;font-weight:700;color:#fff;background:var(--ocean);margin-top:8px}
-  #saveStatus{margin-top:12px;font-size:.9rem}
-  #saveStatus code{background:var(--ice);padding:1px 6px;border-radius:5px;font-size:.85em}
-  footer{background:var(--teal);color:var(--mist);text-align:center;padding:18px;font-size:.82rem}
-  /* ---------- login gate ---------- */
-  #gate{position:fixed;inset:0;z-index:99;background:linear-gradient(135deg,var(--deep),var(--teal) 60%,var(--ocean));
-        display:flex;align-items:center;justify-content:center;padding:20px}
-  .gate-card{background:#fff;border-radius:16px;max-width:430px;width:100%;padding:34px 32px;box-shadow:0 18px 50px rgba(0,0,0,.35)}
-  .gate-logo{font-weight:800;color:var(--teal);font-size:1.35rem;letter-spacing:.4px}
-  .gate-tag{display:inline-block;background:var(--amber);color:#fff;border-radius:7px;padding:3px 12px;font-size:.72rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-top:8px}
-  .gate-card h2{margin:16px 0 6px;font-size:1.25rem}
-  .gate-card .gsub{color:var(--mute);font-size:.9rem}
-  .gate-card label{display:block;font-size:.85rem;font-weight:600;margin:15px 0 5px;color:var(--body)}
-  .gate-card label span{color:var(--mute);font-weight:400}
-  #loginEmail,#loginName{width:100%;padding:11px 13px;border:1.5px solid var(--mist);border-radius:9px;font-size:1rem;color:var(--body)}
-  #loginEmail:focus,#loginName:focus{outline:none;border-color:var(--ocean)}
-  #loginErr{color:var(--bad);font-size:.85rem;margin-top:9px;min-height:1.2em}
-  .gate-card .btn{width:100%;margin-top:12px;padding:13px}
-  .gate-note{margin-top:18px;font-size:.8rem;color:var(--mute);border-top:1px solid var(--ice);padding-top:12px}
+  .fb.good{background:#eaf6ee;color:#135a2f}.fb.badfb{background:#fbecec;color:#7a2222}
+  .score{font-size:15px;font-weight:700;color:var(--navy);margin-top:8px}
+  /* quiz */
+  .qq{margin:16px 0;padding-bottom:12px;border-bottom:1px solid var(--line)}
+  .qq p{margin:0 0 6px;font-weight:600}
+  .qq label{display:block;padding:6px 8px;border-radius:6px;cursor:pointer}
+  .qq label:hover{background:#f1f5f7}
+  .qq.correct p::after{content:"  ✓";color:var(--ok)}
+  .qq.incorrect p::after{content:"  ✗";color:var(--bad)}
+  .qq .exp{display:none;font-size:13px;color:var(--mute);margin-top:6px}
+  .qq.graded .exp{display:block}
+  .result{font-size:18px;font-weight:800;padding:14px;border-radius:10px;margin-top:14px;display:none}
+  .result.pass{background:#eaf6ee;color:#135a2f;display:block}
+  .result.fail{background:#fbecec;color:#7a2222;display:block}
+  footer{text-align:center;color:var(--mute);font-size:12px;padding:30px 10px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:700px){.grid2{grid-template-columns:1fr}}
+  .emailbox{background:#fafbfc;border:1px dashed #b9c4ce;border-radius:8px;padding:14px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;white-space:pre-wrap;margin:8px 0}
+  a{color:var(--teal-d)}
+  .progress{height:6px;background:#dfe6ec;border-radius:3px;overflow:hidden;margin:6px 0 0}
+  .progress i{display:block;height:100%;background:var(--teal);width:0;transition:.3s}
 </style>
 </head>
 <body>
 
-<!-- ================= LOGIN GATE ================= -->
 <div id="gate">
-  <div class="gate-card">
-    <div class="gate-logo">Ovena Health</div>
-    <span class="gate-tag">Week 2 Self-Training</span>
-    <h2>Sign in to start</h2>
-    <p class="gsub">Enter your email so your quiz results land in Harold's sheet automatically. 2 days · about 1.5 hours a day.</p>
-    <label for="loginEmail">Email address *</label>
-    <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email">
-    <label for="loginName">Your name <span>(optional)</span></label>
-    <input type="text" id="loginName" placeholder="Alexis" autocomplete="name">
-    <div id="loginErr"></div>
-    <button class="btn" onclick="doLogin()">Start training →</button>
-    <p class="gate-note">🔒 What gets saved: your email, each role-play score, and every quiz attempt (score + answers). Nothing else.</p>
+  <div class="card">
+    <h2>Appointment Setter Training</h2>
+    <p style="color:var(--mute);font-size:14px">Ovena Health internal training. Enter your email to start. Your role-play scores and quiz attempts are saved under this email.</p>
+    <input type="email" id="gEmail" placeholder="you@email.com" style="width:100%;margin:8px 0">
+    <input type="text" id="gName" placeholder="Your name (optional)" style="width:100%;margin:0 0 12px">
+    <button class="btn" onclick="signIn()">Start training</button>
+    <p id="gErr" style="color:var(--bad);font-size:13px;display:none;margin:8px 0 0">Enter a valid email.</p>
   </div>
 </div>
 
-<!-- ================= APP (hidden until login) ================= -->
-<div id="app" style="display:none">
-<header><div class="wrap" style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
-  <div>
-    <h1>Ovena Health · Week 2 Self-Training</h1>
-    <p>2 days of training you can do on your own. Work top to bottom. Your quiz score goes straight to Harold's sheet.</p>
-  </div>
-  <div class="who">👤 <span id="whoChip"></span><a onclick="logout()">Not you?</a></div>
-</div></header>
-<nav><div class="wrap">
-  <button class="on" data-s="start">Start Here</button>
-  <button data-s="math">💰 Money Math</button>
-  <button data-s="menu">What We Sell</button>
-  <button data-s="markets">Who We Call</button>
-  <button data-s="disc">The Questions</button>
-  <button data-s="rp">🎭 Role Play</button>
-  <button data-s="quiz">✅ Quiz</button>
-</div></nav>
-<main>
+<header>
+  <h1>Ovena Health · Appointment Setter Training</h1>
+  <p>Your job: find practices that place skin grafts, reach the right person, and book a qualified Lunch &amp; Learn. <span id="who"></span></p>
+  <div class="progress"><i id="prog"></i></div>
+</header>
 
-<!-- ================= START ================= -->
-<section id="start" class="on">
-  <h2>Your 2-day plan</h2>
-  <p class="sub">Harold can't sit with you this week, so this page is your trainer. Do it in order. Check off each box as you finish.</p>
-  <div class="card">
-    <span class="daylbl">DAY 1 — LEARN THE BUSINESS (about 1.5 hours)</span>
-    <label class="check"><input type="checkbox"><span><b>1 · Money Math (30 min).</b> Learn the discounts and how YOU get paid. Play with the calculator until this question is easy: <i>"If a foot doctor buys 25 pairs of socks every month, how much do I make in a year?"</i></span></label>
-    <label class="check"><input type="checkbox"><span><b>2 · What We Sell (15 min).</b> We sell exactly 3 things right now. Know all 3, and know the 1 thing that's coming next month.</span></label>
-    <label class="check"><input type="checkbox"><span><b>3 · Who We Call (45 min).</b> This is the big one. 7 types of customers. For each one, read their PAIN (what hurts them) — then say out loud what you'd lead with on a call.</span></label>
-  </div>
-  <div class="card">
-    <span class="daylbl">DAY 2 — PRACTICE LIKE IT'S REAL (about 1.5 hours)</span>
-    <label class="check"><input type="checkbox"><span><b>4 · The Questions (20 min).</b> Flip each card. Say the question OUT LOUD before you look at the back. These questions are how you start every call.</span></label>
-    <label class="check"><input type="checkbox"><span><b>5 · Role Play (45 min).</b> Three practice calls. You need 88% or better on each one. Under 90%? Play it again — real calls are harder than this game. Every attempt is logged for Harold.</span></label>
-    <label class="check"><input type="checkbox"><span><b>6 · Quiz (15 min).</b> 15 questions. Your score is sent to Harold's sheet automatically when you hit Grade — screenshot it as a backup.</span></label>
-  </div>
-  <div class="card" style="border-left:5px solid var(--amber)"><span class="tag" style="color:var(--amber)">⏳ Coming soon — your rep portal</span>
-    <p style="margin-top:4px">You're getting a portal built for reps. It will show, in one simple place: <b>your accounts</b> and what they're ordering · <b>the revenue you're generating</b> · whether each account is ordering <b>more or less</b> than before · and <b>when orders ship</b>. How to use it when it lands: check it every morning. An account ordering LESS is a phone call TODAY — that's how you keep accounts active instead of losing them quietly. A shipping delay? You call the customer before they call you. Until it's live, Odoo is your tracker — log every call, same day.</p></div>
-  <div class="band"><b>The one big idea behind everything:</b> doctors and nurses do NOT make much money on supplies. So why would they buy from us? Two reasons. Some of them <b>MAKE money</b> with us — they buy our stuff at wholesale prices and sell it to their patients at a profit. The rest <b>SAVE money</b> with us — they get everything for a dressing change in one box instead of buying 5 things from 5 places. Every single page in this training comes back to that: make them money, or save them money.</div>
+<div class="wrap">
+<nav id="nav"></nav>
+
+<!-- 1 -->
+<section class="mod" id="m1">
+<div class="card">
+<h2>1. Your job</h2>
+<div class="time">10 minutes · Read it twice</div>
+<p>You book 15-minute lunches (Lunch &amp; Learns) between our sales rep and practices that <b>already apply skin grafts</b>. You do not sell. You do not quote prices. You do not answer clinical or insurance questions. You find the right person, ask a few questions, and put a meeting on the calendar.</p>
+<h3>A win, in order</h3>
+<ol>
+<li><b>Booked lunch</b> with a practice that does grafts, clinician confirmed to attend.</li>
+<li><b>Booked call</b> (15 min) with the decision-maker when lunch is not possible.</li>
+<li><b>Agreed follow-up:</b> named person, topic, email, and a date you will call back.</li>
+</ol>
+<div class="rule">A "send me info" with no name, email, or callback date is not a win. Get all three or it does not count.</div>
+<h3>Daily targets</h3>
+<ul>
+<li>50 dials minimum.</li>
+<li>Every call logged the same day.</li>
+<li>Every agreed email sent the same business day.</li>
+</ul>
+<p>Read the scripts out loud five times before your first call. Say the words exactly as written until they feel natural, then make them your own.</p>
+<div class="row"><button class="btn" onclick="done(1)">Done, next module</button></div>
+</div>
 </section>
 
-<!-- ================= MONEY MATH ================= -->
-<section id="math">
-  <h2>Money Math — what a deal pays you</h2>
-  <p class="sub">First read the 3 rules. Then build a pretend order below and watch the numbers change.</p>
+<!-- 2 -->
+<section class="mod" id="m2">
+<div class="card">
+<h2>2. What we sell, in plain English</h2>
+<div class="time">20 minutes</div>
+<p>Ovena Health is a US-based wound care supplier. Practices buy from us directly, not through a middleman. You need two products, one sentence each.</p>
 
-  <div class="card">
-    <div class="tag">The 3 rules — that's all there is</div>
-    <ul class="tight">
-      <li><b>Rule 1 — Buy more, pay less.</b> Customers get a discount for bigger orders: <b>10+ items = 10% off · 25+ = 15% off · 50+ = 20% off.</b> That's the whole discount system. Nothing deeper without Harold's OK — never make up a discount on the phone.</li>
-      <li><b>Rule 2 — You get a cut of every order.</b> Your cut is <b>12%</b> of what the customer pays. And when an order hits <b>50+ items, your cut jumps to 15%</b>. So big orders pay you twice: bigger total AND a bigger percent.</li>
-      <li><b>Rule 3 — Tiny orders pay you 5%.</b> We WILL sell someone 1 or 2 boxes — but your cut drops to 5% on those. So don't chase them. Your job is bulk orders (10+) that repeat every month.</li>
-    </ul>
-  </div>
+<h3>Skin grafts (your main focus)</h3>
+<p>When a wound will not close on its own (diabetic foot ulcer, venous leg ulcer, pressure wound), the clinician can place a graft over it. A graft is a thin sheet of medical tissue that gives the wound a scaffold to heal on. We carry <b>over 20 graft options</b> covering conservative wound care (standard, lower-intensity treatment) and advanced wound care (hard-to-heal wounds). You never name a product.</p>
+<div class="say"><small>Your line</small>"We carry over 20 skin grafts for conservative and advanced wound care, and our team walks your clinicians through which ones fit your patients and your payers."</div>
+<div class="say"><small>If they go deeper (which graft, sizes, Medicare, coverage, how to apply)</small>"That is exactly what the lunch is for. Our specialist covers that in person."</div>
 
-  <div class="grid2">
-    <div class="card">
-      <span class="steplbl">STEP 1</span>
-      <div class="field"><label>What are you selling?</label>
-        <select id="prod"></select></div>
-      <span class="steplbl">STEP 2</span>
-      <div class="field"><label>How many? → <b id="qtyLab">10</b></label>
-        <input type="range" id="qty" min="1" max="100" value="10">
-        <div class="ladder" id="ladder"></div></div>
-      <div class="note" style="margin-top:2px">Your cut is automatic: <b>12%</b> of the order · jumps to <b>15%</b> at 50+ items · drops to <b>5%</b> on 1–2 box orders.</div>
-    </div>
-    <div class="card">
-      <div class="tag">What happens</div>
-      <div class="story" id="oStory">—</div>
-      <div class="grid3" style="gap:10px">
-        <div class="stat"><div class="v" id="oPrice">—</div><div class="l">Buyer pays per item</div></div>
-        <div class="stat"><div class="v" id="oTotal">—</div><div class="l">Whole order</div></div>
-        <div class="stat hero"><div class="v" id="oComm">—</div><div class="l">YOU earn</div></div>
-      </div>
-      <p class="note" id="singleNote"></p>
-      <p class="note">Your public prices always come from the wholesale price sheet — quote from the sheet, never from memory.</p>
-    </div>
-  </div>
+<h3>Compression socks (second product)</h3>
+<p>Medical-grade compression socks for patients with swelling, poor circulation, lymphedema, vein problems, or pregnancy. The practice partners with us: we check whether each patient's insurance covers the socks. Covered goes through insurance; not covered, the patient pays out of pocket at a price well under retail. The practice carries no inventory and does no billing.</p>
+<div class="say"><small>Your line</small>"We set up a compression sock partnership. Your office refers the patient, we check their coverage and ship the socks. No inventory, no billing on your side."</div>
 
-  <div class="card">
-    <div class="tag">The magic part — repeat orders</div>
-    <p style="margin-bottom:12px">One order is nice. But the real money is customers who order <b>every month</b>. You set them up once, you manage the account, and it pays you again and again. Try it:</p>
-    <div class="grid3">
-      <div class="field"><label>How many customers like this one?</label><input type="number" id="nAcct" min="1" max="50" value="5"></div>
-      <div class="field"><label>How many orders per month (each)?</label><input type="number" id="nReo" min="1" max="8" value="1"></div>
-      <div class="field"><label>&nbsp;</label><div class="stat hero" style="padding:9px"><div class="v" id="oMonthly">—</div><div class="l">You earn per month</div></div></div>
-    </div>
-    <div class="grid3" style="margin-top:6px">
-      <div class="stat"><div class="v">$3,500</div><div class="l">Your base pay / month</div></div>
-      <div class="stat"><div class="v" id="oEarn">—</div><div class="l">Base + commission / month</div></div>
-      <div class="stat"><div class="v" id="oYear">—</div><div class="l">Your commission / year</div></div>
-    </div>
-    <p class="note"><b>How to grow (this is the plan Harold wants):</b> start every new customer SMALL — a 10-item order is an easy yes. Then at their 2nd or 3rd reorder, move them up a level: "the 25-pack drops your price per item." Five small monthly customers beats one giant customer who never says yes.</p>
-  </div>
+<h3>Everything else</h3>
+<p>Collagen dressings, kits, saline wash, hydrocolloid, sock aids. You may hear these words. Write them down and move on. The rep handles it.</p>
+
+<h3>Wound care 101: the words you will hear</h3>
+<p>You do not need to be clinical. You need to recognize these terms so you can nod, write them down, and keep the call moving. Read each link once.</p>
+<table>
+<tr><th>Term</th><th>What it means in one line</th><th>Read this</th></tr>
+<tr><td>Diabetic foot ulcer (DFU)</td><td>Open sore on the foot of a diabetic patient. Nerve damage means they often can't feel it, so it gets deep before anyone notices. The number one wound grafts go on.</td><td><a href="https://my.clevelandclinic.org/health/diseases/17169-foot-and-toe-ulcers" target="_blank">Cleveland Clinic</a></td></tr>
+<tr><td>Venous leg ulcer (VLU)</td><td>Open sore on the lower leg caused by veins that can't push blood back up. Treated with wound care plus compression. Second most common graft wound.</td><td><a href="https://medlineplus.gov/ency/patientinstructions/000744.htm" target="_blank">MedlinePlus</a></td></tr>
+<tr><td>Chronic / non-healing wound</td><td>Any wound not healed after about 30 days of standard care. This is when a clinician considers a graft.</td><td><a href="https://share.upmc.com/2023/08/human-skin-substitutes-how-cellular-based-tissue-helps-you-heal/" target="_blank">UPMC</a></td></tr>
+<tr><td>Skin graft / skin substitute / CTP / CAMP</td><td>Different names for one category: a sheet of tissue placed on a stalled wound to help it close. Hear any of these and the practice does grafts.</td><td>Same UPMC link</td></tr>
+<tr><td>Amnion / amniotic / placental graft</td><td>Grafts made from donated placental tissue. Most of our 20+ grafts are in this family. Recognize it; never explain it.</td><td><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8706466/" target="_blank">NIH</a></td></tr>
+<tr><td>Debridement</td><td>Cleaning dead tissue off a wound before a graft goes on. If they say it, they do advanced wound care.</td><td>Covered in UPMC link</td></tr>
+<tr><td>Compression / compression therapy</td><td>Squeezing the leg with socks or wraps so fluid and blood move back up. Standard for swelling, vein disease, lymphedema, venous ulcers.</td><td><a href="https://medlineplus.gov/ency/patientinstructions/000597.htm" target="_blank">MedlinePlus</a></td></tr>
+<tr><td>Lymphedema</td><td>Chronic swelling when lymph fluid can't drain. These patients wear compression for life. Prime sock target.</td><td><a href="https://medlineplus.gov/ency/patientinstructions/000615.htm" target="_blank">MedlinePlus</a></td></tr>
+<tr><td>Venous insufficiency / CVI</td><td>Leaky vein valves in the legs. Causes swelling, skin changes, eventually venous ulcers. Prime sock target.</td><td>Same MedlinePlus link</td></tr>
+<tr><td>MAC / LCD</td><td>Medicare's regional contractor and its coverage rules for grafts. The number one thing clinicians worry about. You never discuss it.</td><td>Your line: "Our specialist covers payer questions at the lunch."</td></tr>
+</table>
+<div class="rule">The one connection to hold in your head: <b>diabetic and venous ulcers are the wounds, grafts are what clinicians put on them when they stall, and compression is what keeps venous legs from ulcerating in the first place.</b></div>
+<div class="row"><button class="btn" onclick="done(2)">Done, next module</button></div>
+</div>
 </section>
 
-<!-- ================= WHAT WE SELL ================= -->
-<section id="menu">
-  <h2>What we sell — 3 things now, 1 thing next month</h2>
-  <p class="sub">Keep it simple. Right now your bag has exactly three offers in it.</p>
-  <div class="grid3">
-    <div class="card mkt"><span class="tag">✓ Selling now</span><h3>1 · Collagen by itself</h3>
-      <p>Just the healing layer. 5-packs: 2×2 ($32.99), 4×4 ($55), powder ($67.99). For offices that already have their own bandages and tape — they just need the collagen. The <b>powder</b> is our special weapon: it works on deep, odd-shaped wounds that a flat pad can't touch.</p>
-      <p style="margin-top:8px"><b>The collagen money story:</b> collagen is insurance-reimbursable. Offices that bill can use the <b>A-codes</b>: a 2×2 or 4×4 piece pays back about <b>$19–$25</b>, and powder about <b>$40 per gram</b>. We don't touch the billing — THEY bill, THEY collect. We just show them what they can make. (The "we try insurance for you" offer is for SOCKS only — never say it about collagen.)</p></div>
-    <div class="card mkt"><span class="tag">✓ Selling now</span><h3>2 · Collagen kits</h3>
-      <p>Everything for one dressing change in one box (2×2 kit $36.99 · 4×4 kit $59.99 · Wound Kit in 5-set/10-set). And a card to keep in your <b>back pocket for emergencies only</b>: a buyer can pay <b>50% now and the rest in 30 days</b>. Never lead with it — use it only when money is the LAST thing stopping a yes.</p></div>
-    <div class="card mkt"><span class="tag">✓ Selling now</span><h3>3 · Compression sock partnership</h3>
-      <p>The doctor sends patients our way (or sells socks right in the office). <b>We try the patient's insurance first.</b> If insurance says no, the patient pays our partner price: <b>$24 a pair + shipping</b> — instead of $40–$60 at the store. Either way, the patient actually gets their socks. And you manage the account.</p></div>
-  </div>
-  <div class="card" style="border-left:5px solid var(--amber)"><span class="tag" style="color:var(--amber)">⏳ Coming in about 30 days — do NOT sell it yet</span>
-    <h3 style="color:var(--teal);font-size:1.05rem">Silicone foam dressing kit (by itself)</h3>
-    <p style="margin-top:4px">Our own product, priced to beat the big guys. For now, just plant the seed on calls: <i>"Next month I'll have something new for your everyday dressings — I'll bring it to you first."</i> That gives every customer a reason to pick up your NEXT call.</p></div>
-  <div class="band"><b>One rule to never break:</b> never promise that insurance will cover something. The honest line — <i>"we try insurance first; if it's not covered, your patients still get our $24 price"</i> — closes more deals than a promise you can't keep.</div>
+<!-- 3 -->
+<section class="mod" id="m3">
+<div class="card">
+<h2>3. Who to call and who to ask for</h2>
+<div class="time">15 minutes</div>
+<p>Call from the list you are given. Top to bottom. Do not skip around.</p>
+<table>
+<tr><th>Practice type</th><th>Grafts?</th><th>Socks?</th><th>Ask for</th></tr>
+<tr><td>Wound care clinic</td><td>Yes, best target</td><td>Sometimes</td><td>Clinic manager or wound care nurse lead</td></tr>
+<tr><td>Podiatry</td><td>Yes, strong target</td><td>Yes</td><td>Office manager; the podiatrist evaluates</td></tr>
+<tr><td>Vascular / vein / lymphedema</td><td>Some</td><td>Yes, best sock target</td><td>Office manager or practice administrator</td></tr>
+<tr><td>Dermatology / plastic surgery</td><td>Some</td><td>No</td><td>Practice manager</td></tr>
+<tr><td>Mobile / home-based wound care</td><td>Yes</td><td>Sometimes</td><td>Clinical director or owner</td></tr>
+<tr><td>Home health agency</td><td>Rarely</td><td>Sometimes</td><td>Director of nursing or administrator</td></tr>
+<tr><td>OB/GYN</td><td>No</td><td>Yes</td><td>Office manager</td></tr>
+</table>
+<h3>Three roles</h3>
+<ul>
+<li><b>Gatekeeper:</b> front desk. Protects the doctor's time. Be short, friendly, specific. Never pitch them.</li>
+<li><b>Decision-maker:</b> office manager, practice administrator, clinic manager. Books the lunch. This is who you want.</li>
+<li><b>Clinician:</b> the doctor, NP, or wound nurse who places grafts. Must be at the lunch. You rarely talk to them directly.</li>
+</ul>
+<div class="rule">The one question that qualifies a graft lead: <b>"Does your team apply skin grafts in the office?"</b> No, and no plans to start, means socks or a polite close.</div>
+<div class="row"><button class="btn" onclick="done(3)">Done, next module</button></div>
+</div>
 </section>
 
-<!-- ================= WHO WE CALL ================= -->
-<section id="markets">
-  <h2>Who we call — 7 types of customers</h2>
-  <p class="sub">Every card has 4 parts: what they WANT, what HURTS them, what you SELL them, and what you SAY first. The pain part is the most important — you sell by fixing pain.</p>
-  <div class="grid2">
+<!-- 4 -->
+<section class="mod" id="m4">
+<div class="card">
+<h2>4. Get past the front desk</h2>
+<div class="time">20 minutes</div>
+<p>Front desks route calls two ways. A stranger asking "who handles ordering" goes to voicemail. Someone asking for Dr. Patel by name, with a reason, gets put through. Spend five minutes before each call so you are the second kind.</p>
 
-    <div class="card mkt"><h3>🦶 Podiatrists (foot doctors)</h3>
-      <span class="pill gold">Best all-around customer</span><span class="pill">Collagen ✓✓</span><span class="pill">Kits ✓</span><span class="pill">Socks ✓✓</span>
-      <div class="row"><span class="lbl">What they want</span><p>Treat feet well — and make extra money doing it.</p></div>
-      <div class="row"><span class="lbl pain">What hurts them</span><p>Their wound patients get sent to a pharmacy or Amazon for supplies — so the doctor makes $0 on any of it. Patients half the time never even buy the supplies, come back worse, and the doctor gets blamed.</p></div>
-      <div class="row"><span class="lbl">What you sell</span><p>The MAKE-money story, two ways. Cash: they buy our kits and socks at wholesale, sell them in the office at their price, keep the profit. Insurance: offices that bill can use the collagen <b>A-codes</b> — a 2×2 or 4×4 piece reimburses about $19–$25, powder about $40 a gram. We don't do the billing; we just show the math.</p></div>
-      <div class="row"><span class="lbl say">Say first</span><p><i>"How do your wound care patients get their supplies today — do they leave with them, or get sent somewhere?"</i></p></div></div>
+<h3>Before you dial</h3>
+<ul>
+<li>Practice name, city, state, specialty confirmed.</li>
+<li>Call log open. Rep's calendar open with <b>two</b> lunch slots to offer.</li>
+<li>Approved callback number and sending email ready.</li>
+<li>Call 9:30 to 11:30 am or 1:30 to 4:00 pm in <b>their</b> time zone. Avoid Monday mornings and Friday afternoons.</li>
+</ul>
 
-    <div class="card mkt"><h3>🩺 Lymphedema, vein &amp; vascular doctors</h3>
-      <span class="pill gold">The #1 target for socks</span><span class="pill">Socks ✓✓</span><span class="pill">Collagen ○</span>
-      <div class="row"><span class="lbl">What they want</span><p>Their patients to actually WEAR compression — for swelling (lymphedema), after vein surgery, and for circulation problems. Compression IS the treatment.</p></div>
-      <div class="row"><span class="lbl pain">What hurts them</span><p>They tell a patient "you need compression socks" — then the patient sees $40–$60 at the store, insurance often says no, and the patient just... skips it. Swelling comes back. Surgery results get worse. The doctor looks bad and can't fix it.</p></div>
-      <div class="row"><span class="lbl">What you sell</span><p>The sock partnership: we try insurance first; if it's a no, their patients pay <b>$24 a pair</b>. Suddenly patients actually buy them and actually wear them. Some offices also stock and sell them directly (more MAKE-money). Sock aids for older patients who can't pull them on.</p></div>
-      <div class="row"><span class="lbl say">Say first</span><p><i>"When you prescribe compression, how many of your patients actually go buy it?"</i> (They know the answer is 'not enough.' That's the whole call.)</p></div></div>
+<h3>Five-minute research, every practice</h3>
+<ol>
+<li><b>Practice website.</b> Providers / Our Team page: write down every doctor, NP, PA with title. Services page: look for "wound care," "skin substitutes," "grafts," "advanced wound care," "diabetic foot," "limb salvage." Any of those means they place grafts. Copy the exact phrase.</li>
+<li><b>NPI Registry</b> (<a href="https://npiregistry.cms.hhs.gov" target="_blank">npiregistry.cms.hhs.gov</a>). Search the practice or doctor. Confirms full name, specialty, address. 60 seconds.</li>
+<li><b>Google reviews.</b> Scan for "wound," "ulcer," "graft," "healed." Patients name the doctor. Note who signs the practice's replies (often the office manager).</li>
+<li><b>LinkedIn.</b> Search the practice name. Office managers and practice administrators list it. Get the name.</li>
+</ol>
+<p>Write it on the lead before you dial: clinician name and title, office manager name if found, exact wound care wording from their site.</p>
 
-    <div class="card mkt"><h3>🏠 Home health agencies</h3>
-      <span class="pill">Kits ✓✓</span><span class="pill no">NEVER lead with collagen</span><span class="pill">Socks ○</span>
-      <div class="row"><span class="lbl">What they want</span><p>Keep patients stable AT HOME with fewer visits. They are NOT trying to heal wounds fast — that's not their job or their goal.</p></div>
-      <div class="row"><span class="lbl pain">What hurts them</span><p>Nurses show up to a patient's living room and something's missing from the bag. Someone in the office spends half their week ordering from 3 different suppliers. Every nurse's bag is packed differently. Margins per visit are razor thin, and supply chaos eats them alive.</p></div>
-      <div class="row"><span class="lbl">What you sell</span><p>The SAVE-money story: one Wound Care Kit box = a complete dressing change. Every nurse carries the same box. Nothing's ever missing. One order, one invoice, reorders run themselves — you manage it. Collagen only comes up later, when a wound stalls.</p></div>
-      <div class="row"><span class="lbl say">Say first</span><p><i>"How much of your week goes to supply chases and missing items in the field?"</i></p></div></div>
+<h3>The assumptive opener (use it whenever you have a name)</h3>
+<div class="say">"Hi, is Dr. [last name] in the office today?"</div>
+<div class="do">Say it like a colleague, not a salesperson. Then stop.</div>
+<div class="branch"><b>"Yes, who's calling?"</b><div class="say">"[Your name] with Ovena Health. I'm reaching out about the skin grafts for her wound care patients. Is she between patients, or is [office manager] the better person for scheduling?"</div></div>
+<div class="branch"><b>"She's with patients."</b><div class="say">"Figured. Who handles her schedule for vendor meetings? I just need two minutes with them."</div></div>
+<div class="branch"><b>"What is this regarding?"</b><div class="say">"Grafts for the practice's wound care patients. Your site mentions advanced wound care, and we carry over 20 grafts for that. I'm trying to find 15 minutes for Dr. [last name] and the team."</div></div>
+<div class="branch"><b>"Is she expecting your call?"</b><div class="do">Only say yes if it is true. Make it true: send the graft email the day before, then open with the follow-up line below.</div></div>
+<div class="never">Never claim a relationship you don't have. Never say "we've worked with the practice before" or "the doctor asked me to call" unless it happened. Sound familiar by using their name, their website's words, and a specific reason.</div>
 
-    <div class="card mkt"><h3>🛏️ SNFs (skilled nursing facilities)</h3>
-      <span class="pill">Collagen ✓✓</span><span class="pill">Kits ✓</span><span class="pill">Socks ○</span>
-      <div class="row"><span class="lbl">What they want</span><p>To actually HEAL wounds. State inspectors grade them on it — the opposite of home health.</p></div>
-      <div class="row"><span class="lbl pain">What hurts them</span><p>A wound that won't close is a black mark on their inspection, and can even mean fines or a lawsuit. Stalled wounds are their nightmare.</p></div>
-      <div class="row"><span class="lbl">What you sell</span><p>The healing story: collagen restarts stalled wounds, powder handles the deep ones nothing else fits. Kits keep every change consistent. Talk cost per dressing change, not cost per box.</p></div>
-      <div class="row"><span class="lbl say">Say first</span><p><i>"How many wounds in the building right now have been stuck for over a month?"</i></p></div></div>
-
-    <div class="card mkt"><h3>🚗 Mobile wound care</h3>
-      <span class="pill">Kits ✓✓</span><span class="pill">Collagen ✓</span>
-      <div class="row"><span class="lbl">What they want</span><p>Fast, smooth visits — they treat patients out of a car all day.</p></div>
-      <div class="row"><span class="lbl pain">What hurts them</span><p>Getting to a bedside and realizing the tape or wash is back at the office. Restocking the car is chaos. Time lost = visits lost = money lost.</p></div>
-      <div class="row"><span class="lbl">What you sell</span><p>One kit = one visit, grab and go. Nothing missing, ever. Auto-reorder so the trunk stays stocked. These buyers feel the 5-things-from-5-places pain the hardest — this is your easiest consolidation sell.</p></div>
-      <div class="row"><span class="lbl say">Say first</span><p><i>"What happens when you're at a bedside and something's missing from the car?"</i></p></div></div>
-
-    <div class="card mkt"><h3>🏥 Wound care clinics</h3>
-      <span class="pill">Collagen ✓✓</span><span class="pill">Kits ✓</span><span class="pill">Socks ✓</span>
-      <div class="row"><span class="lbl">What they want</span><p>Depends on the clinic. <b>Well-funded clinics</b> want great results and a premium patient experience. <b>Tight-budget clinics</b> want to stretch every dollar.</p></div>
-      <div class="row"><span class="lbl pain">What hurts them</span><p>Both types juggle several suppliers plus "Amazon when we run out" (which means stockouts AND paying retail). Tight-budget clinics also have patients who can't afford supplies at all — so patients skip care.</p></div>
-      <div class="row"><span class="lbl">What you sell</span><p>Well-funded: premium US-based products + everything in one order. Tight-budget: best total price, $24 socks their patients can actually afford — and if cash is the ONLY blocker, the back-pocket split terms (50% now, rest in 30 days). Ask which kind you're talking to — then pick the story.</p></div>
-      <div class="row"><span class="lbl say">Say first</span><p><i>"How do you buy supplies today — one supplier, or a bit of everywhere?"</i></p></div></div>
-
-  </div>
-  <div class="band"><b>The sorting question — memorize this one:</b> <i>"What's the goal for these patients — healing them fast, or keeping them stable and comfortable?"</i><br><br>If they say <b>healing</b> (SNFs, podiatry, wound clinics) → tell the collagen story. If they say <b>stable</b> (home health) → tell the kit story. If they can <b>sell to patients</b> (podiatry, vein/vascular) → add the MAKE-money story on top. That one question routes every call.</div>
+<h3>Email first, call second</h3>
+<p>For top-priority practices (website says grafts or advanced wound care), send the graft email first, then call the next business day.</p>
+<div class="say">"Hi, this is [your name] with Ovena Health following up on an email I sent [name] yesterday about skin grafts for your wound care patients. Is [name] available?"</div>
+<p>You are now a known contact, not a cold call. Front desks put follow-up calls through.</p>
+<div class="row"><button class="btn" onclick="done(4)">Done, next module</button></div>
+</div>
 </section>
 
-<!-- ================= THE QUESTIONS ================= -->
-<section id="disc">
-  <h2>The questions — how you start every call</h2>
-  <p class="sub">You are not calling to pitch. You're calling to find out what's broken. Ask, listen, and they will tell you exactly what to sell them.</p>
-  <p class="hint">Click a card to flip it → say the question OUT LOUD before reading the back.</p>
-  <div class="grid2" id="flashwrap"></div>
-  <div class="band"><b>The listening rules:</b> talk 30%, listen 70%. Write down every supplier name and every price they mention — that's ammo for your next call. Every complaint they say out loud IS your pitch — just repeat it back with our fix. And end every good call with: <i>"Who else do you know that should hear this?"</i></div>
+<!-- 5 -->
+<section class="mod" id="m5">
+<div class="card">
+<h2>5. Script A: Skin grafts → book the lunch</h2>
+<div class="time">30 minutes · Read aloud five times</div>
+
+<h3>Step 1. Gatekeeper (under 15 seconds, when you have no name)</h3>
+<div class="say">"Hi, this is [your name] with Ovena Health. We're a wound care supplier with over 20 skin grafts for conservative and advanced wound care. Who handles product selection for the providers doing wound care there?"</div>
+<div class="do">Stop talking. Let them answer.</div>
+<div class="branch"><b>They give a name</b><div class="say">"Perfect, is [name] available for two minutes?"</div>If no: <div class="say">"No problem. When is [name] usually at the desk? I'll call back then."</div></div>
+<div class="branch"><b>"We don't do that here"</b><div class="say">"Got it, thanks. Does anyone there apply skin grafts on wounds, or is it all referred out?"</div>Referred out: thank them, close, log Not a fit.</div>
+<div class="branch"><b>"Send an email"</b><div class="say">"Happy to. Who should it go to, and what's the best address? I'll follow up by phone on [day]."</div>That is an agreed follow-up, not a dead end.</div>
+
+<h3>Step 2. Decision-maker</h3>
+<div class="say">"Hi [name], this is [your name] with Ovena Health. We supply wound care practices directly, and we carry over 20 skin grafts for conservative and advanced wound care. Quick question so I don't waste your time: does your team apply skin grafts in the office?"</div>
+<div class="do">Stop. Listen. Their answer sorts the call.</div>
+<div class="branch"><b>Yes / sometimes / one doctor does</b> → Step 3. Live lead.</div>
+<div class="branch"><b>No, we refer out</b><div class="say">"Understood. Does the practice see patients with swelling or circulation issues who need compression socks?"</div>Yes → Script B. No → thank and close.</div>
+<div class="branch"><b>"Who are you again?"</b><div class="say">"Ovena Health. We're a direct supplier, so practices get grafts and standard supplies from one place with real support behind it. I'm just checking whether grafts are something your team does."</div></div>
+
+<h3>Step 3. Four qualifying questions (two minutes)</h3>
+<ol>
+<li><div class="say">"Roughly how many graft patients does the practice see in a month? A ballpark is fine."</div></li>
+<li><div class="say">"Who places the grafts, and who decides which products you bring in?"</div><span class="pill">Get the clinician's name</span></li>
+<li><div class="say">"What are you using today, and is there anything about it you'd change if you could?"</div><span class="pill">Write down every product and supplier name</span></li>
+<li><div class="say">"Is your patient mix mostly Medicare, or a mix of Medicare and commercial?"</div><span class="pill">Record it. Never comment on coverage</span></li>
+</ol>
+<div class="say"><small>If they ask which graft, pricing, or coverage</small>"That's exactly what the lunch covers. Our specialist goes through product fit and payer questions with your clinician directly. I'm just here to find a time."</div>
+
+<h3>Step 4. Reflect it back, ask for the lunch</h3>
+<div class="say">"So it sounds like [clinician] is placing grafts for about [number] patients a month, mostly [payer mix], and [the gap they mentioned] is the thing you'd want to look at. Have I got that right?"</div>
+<div class="do">Wait for the yes.</div>
+<div class="say">"Here's what I'd suggest. Our team brings lunch for your staff and does a 15-minute walkthrough of the grafts that fit your patients, with time for [clinician] to ask questions. We can do [day A at time] or [day B at time]. Which works better?"</div>
+<div class="branch"><b>Neither works</b><div class="say">"What day of the week is usually slow for you? I'll build around that."</div></div>
+<div class="branch"><b>Needs to check with the doctor</b><div class="say">"Of course. Let's pencil in [day/time] so we hold it, and I'll confirm with you by [day]. What's the best email for the confirmation?"</div></div>
+<div class="branch"><b>Lunch is too much</b><div class="say">"Understood. Would a 15-minute call with [clinician] and our specialist work instead? Same two times."</div></div>
+
+<h3>Step 5. Lock it in (every line, every time)</h3>
+<div class="say">"Great. Let me confirm so our team is ready."</div>
+<ul>
+<li>"Date and time: [day, date, time, their time zone]."</li>
+<li>"Attending: [clinician] plus [office manager / billing lead]. About how many people should we bring lunch for?"</li>
+<li>"Address: [exact office address and suite]."</li>
+<li>"Best email for the calendar invite and a one-page overview: [email]."</li>
+<li>"Any food restrictions or preferences for the group?"</li>
+</ul>
+<div class="say">"Perfect. You'll have a calendar invite from me within the hour, and I'll call the day before to confirm. Thanks, [name]."</div>
+<div class="do">Hang up. Send the invite and the email immediately. Log everything.</div>
+<div class="row"><button class="btn" onclick="done(5)">Done, next module</button></div>
+</div>
 </section>
 
-<!-- ================= ROLE PLAY ================= -->
-<section id="rp">
-  <h2>Role play — 3 practice calls</h2>
-  <p class="sub">Five decisions per call. Pick what you'd really say. Best answer = 2 points. You need <b>90% or better on each call</b>. Every attempt is logged to Harold's sheet. You can leave a call anytime with the back button.</p>
-  <div id="rpHome">
-    <div class="scene-pick">
-      <div class="card scene-card" onclick="startRP(0)"><h3>🦶 Dr. Patel — Podiatrist</h3><p>Busy foot doctor, 90 seconds between patients. Doesn't sell supplies in-office yet. Your shot at the MAKE-money story.</p><p style="margin-top:8px;color:var(--ocean);font-weight:700" id="rps0">Not played yet</p></div>
-      <div class="card scene-card" onclick="startRP(1)"><h3>🏠 Maria — Home Health Boss</h3><p>Runs 30 field nurses. Buys gauze cheap already. Does NOT want a collagen lecture. Sell the box, not the healing.</p><p style="margin-top:8px;color:var(--ocean);font-weight:700" id="rps1">Not played yet</p></div>
-      <div class="card scene-card" onclick="startRP(2)"><h3>🏥 Chris — Clinic Office Manager</h3><p>Watches every dollar and squeezes every rep on price. Hold your prices, use the 30-day-terms card, get the meeting.</p><p style="margin-top:8px;color:var(--ocean);font-weight:700" id="rps2">Not played yet</p></div>
-    </div>
-  </div>
-  <div id="rpPlay" style="display:none">
-    <div class="card">
-      <div class="rp-top">
-        <button class="btn ghost" onclick="quitRP()">← Back to all 3 calls</button>
-        <span class="tag" id="rpTitle" style="margin:0"></span>
-      </div>
-      <div class="progress"><i id="rpBar" style="width:0%"></i></div>
-      <div class="rp-say" id="rpSay"></div>
-      <p class="rp-ctx" id="rpCtx"></p>
-      <div id="rpOpts"></div>
-      <div class="fb" id="rpFb"></div>
-      <button class="btn" id="rpNext" style="display:none" onclick="rpNext()">Next →</button>
-    </div>
-  </div>
-  <div id="rpDone" style="display:none">
-    <div class="card" style="text-align:center">
-      <div class="tag">Call finished</div>
-      <div class="score-big" id="rpScore"></div>
-      <p id="rpVerdict" style="margin:8px 0 6px"></p>
-      <p class="note" id="rpLogNote" style="margin-bottom:14px"></p>
-      <button class="btn" onclick="quitRP()">← Back to all 3 calls</button>
-    </div>
-  </div>
+<!-- 6 -->
+<section class="mod" id="m6">
+<div class="card">
+<h2>6. Script B: Compression socks</h2>
+<div class="time">15 minutes</div>
+<p>Use when the practice does not do grafts, or when they said yes to grafts and you have 60 seconds left. Targets: vascular, vein, lymphedema, podiatry, OB/GYN, home health.</p>
+<h3>Step 1. Gatekeeper</h3>
+<div class="say">"Hi, this is [your name] with Ovena Health. We run a compression sock program for practices with patients who have swelling or circulation issues. Who handles patient referrals or product programs for the office?"</div>
+<p>Same branches as Script A: get a name, get a time, or get an email and a callback day.</p>
+<h3>Step 2. Decision-maker</h3>
+<div class="say">"Hi [name], [your name] with Ovena Health. Quick one: does the practice see patients who need medical-grade compression socks, like swelling, vein issues, lymphedema, or pregnancy?"</div>
+<div class="branch"><b>Yes</b><div class="say">"Here's how our program works. Your office refers the patient to us. We check their insurance coverage. If they're covered, it runs through insurance. If not, they pay out of pocket at a price well under retail. Your office carries no inventory and does no billing. Does that sound like something worth 15 minutes?"</div></div>
+<div class="branch"><b>"We already recommend a brand / send them to a pharmacy"</b><div class="say">"That makes sense. The difference is we handle the coverage check and the shipping, so the patient actually gets the socks instead of leaving with a recommendation. Worth a look?"</div>Never knock the brand or the pharmacy.</div>
+<div class="branch"><b>No</b><div class="say">"Understood, thanks for your time."</div>Close and log.</div>
+<h3>Step 3. Three questions</h3>
+<ol>
+<li><div class="say">"About how many patients a month would you say need compression?"</div></li>
+<li><div class="say">"Who would handle the referral on your side, the front desk or a nurse?"</div></li>
+<li><div class="say">"Who decides whether the practice brings on a program like this?"</div></li>
+</ol>
+<h3>Step 4. Book it</h3>
+<div class="say">"Great. Our team can walk you through the referral process in 15 minutes, by phone or over lunch, whichever is easier. [Day A at time] or [day B at time]?"</div>
+<p>Confirm the same five items as Script A Step 5. Hang up, send invite and email, log it.</p>
+<div class="say"><small>If they ask cost or coverage</small>"Our team confirms that per patient when they run the coverage check. I don't quote numbers on the phone because they depend on the plan."</div>
+<div class="row"><button class="btn" onclick="done(6)">Done, next module</button></div>
+</div>
 </section>
 
-<!-- ================= QUIZ ================= -->
-<section id="quiz">
-  <h2>The quiz — prove you're ready</h2>
-  <p class="sub" id="quizSub"></p>
-  <div id="quizwrap"></div>
-  <div class="card" style="text-align:center">
-    <button class="btn" id="gradeBtn" onclick="gradeQuiz()">Grade my quiz</button>
-    <div id="saveStatus"></div>
-    <div id="quizResult" style="margin-top:10px"></div>
-  </div>
+<!-- 7 -->
+<section class="mod" id="m7">
+<div class="card">
+<h2>7. Objections: flashcards</h2>
+<div class="time">20 minutes · Say your answer out loud BEFORE you flip the card</div>
+<p>Every objection gets three beats: agree, ask one question, offer the next step. Never argue. Never explain more than two sentences.</p>
+<div id="fcWrap"></div>
+<div class="fcnav"><button class="btn sec" onclick="fcMove(-1)">← Previous</button><span id="fcCount"></span><button class="btn sec" onclick="fcMove(1)">Next →</button></div>
+<h3>Voicemail (under 20 seconds, number twice, one per practice per week)</h3>
+<div class="say"><small>Grafts</small>"Hi [name], this is [your name] with Ovena Health. We supply wound care practices with over 20 skin grafts for conservative and advanced wound care. I'd like to set up a short lunch for your clinicians. You can reach me at [number]. Again, [your name], Ovena Health, [number]."</div>
+<div class="say"><small>Socks</small>"Hi [name], this is [your name] with Ovena Health about our compression sock program for practices. We handle the coverage check and shipping so your office doesn't. You can reach me at [number]. Again, [your name], Ovena Health, [number]."</div>
+<div class="row"><button class="btn" onclick="done(7)">Done, next module</button></div>
+</div>
 </section>
 
-</main>
-<footer>Ovena Health · Internal training — don't share outside the team · Prices come from the wholesale price sheet. When in doubt, the sheet wins.</footer>
-</div><!-- /app -->
+<!-- 8 -->
+<section class="mod" id="m8">
+<div class="card">
+<h2>8. Qualified lead gate and the two emails</h2>
+<div class="time">20 minutes</div>
+<h3>No free lunches: all five or it's a call</h3>
+<p>A lunch costs the rep half a day and the company money. Before you offer one, you must have <b>all five</b> written on the lead. Missing one means you offer a 15-minute call instead.</p>
+<ol>
+<li><b>They place grafts now.</b> Said yes to "Does your team apply skin grafts in the office?" Not "thinking about it." Not "we refer out."</li>
+<li><b>Volume.</b> A number or range per month. "A handful" counts. "I don't know" does not.</li>
+<li><b>Clinician named and attending.</b> The graft-placing doctor, NP, or PA is named and confirmed in the room.</li>
+<li><b>Current product or supplier named.</b> Proves they actually buy grafts.</li>
+<li><b>Payer mix.</b> Mostly Medicare, mostly commercial, or a mix.</li>
+</ol>
+<h4>Red flags: downgrade to a call or walk away</h4>
+<ul>
+<li>Office manager wants the lunch but can't name the clinician or won't commit them.</li>
+<li>They ask about the lunch before they ask about the products.</li>
+<li>"We love lunch and learns" with no answer on volume or supplier.</li>
+<li>Website shows no wound care, podiatry, or vascular, and they can't describe graft use.</li>
+<li>They want to book three months out. Real interest books within three weeks.</li>
+</ul>
+<div class="say"><small>When it smells like free food</small>"Before I put our team on the road, I want to make sure it's worth [clinician]'s time too. Can you confirm they'll be there and roughly how many graft patients they're seeing?"</div>
+<div class="say"><small>If the answer is vague</small>"Let's start with a 15-minute call with [clinician] and our specialist instead. If it's a fit, we'll set up the lunch from there."</div>
+<h4>Day-before confirmation call</h4>
+<div class="say">"Hi [name], confirming tomorrow's 12:00 lunch with Dr. [name] and our team. Is Dr. [name] still able to join?"</div>
+<div class="do">Clinician dropped out? Reschedule. Do not send the team to feed the front desk.</div>
+
+<h3>Which email to send</h3>
+<p>Two emails. Pick by product. Same business day. Under 90 words. One attachment, two at most. Replace every bracket. Never attach pricing, coverage, or clinical documents; the specialist sends those after the meeting.</p>
+<table>
+<tr><th>Situation</th><th>Send</th><th>Attach</th></tr>
+<tr><td>They do grafts (booked or follow-up)</td><td>Graft email</td><td>One-page Ovena overview</td></tr>
+<tr><td>Sock conversation (booked or follow-up)</td><td>Sock email</td><td>One-page sock program overview</td></tr>
+<tr><td>Both came up</td><td>Graft email + one line about socks at the end</td><td>Both one-pagers</td></tr>
+<tr><td>Voicemail left</td><td>Matching email, delete the first sentence</td><td>One-pager</td></tr>
+<tr><td>They said stop</td><td>Nothing. Log Do Not Call.</td><td></td></tr>
+</table>
+<div class="grid2">
+<div><h4>Graft email</h4><div class="emailbox">Subject: Grafts for [Practice] wound care
+
+Hi [Name],
+
+Thanks for the time today. As promised, a one-page overview of Ovena Health is attached. We carry over 20 skin grafts for conservative and advanced wound care and work with practices directly.
+
+[If booked:] We're set for [day, date, time] with Dr. [name]. Calendar invite is attached.
+
+[If not booked:] Would [day/time A] or [day/time B] work for a 15-minute lunch or call with Dr. [name] and our specialist?
+
+Best,
+[Caller name] | Ovena Health | [callback number]</div></div>
+<div><h4>Sock email</h4><div class="emailbox">Subject: Compression sock program for [Practice]
+
+Hi [Name],
+
+Thanks for the time today. Attached is a one-page overview of our compression sock program: your office refers the patient, we check coverage and ship the socks. No inventory or billing on your side.
+
+[If booked:] We're set for [day, date, time]. Calendar invite is attached.
+
+[If not booked:] Would [day/time A] or [day/time B] work for a 15-minute walkthrough?
+
+Best,
+[Caller name] | Ovena Health | [callback number]</div></div>
+</div>
+<h4>Follow-up timing</h4>
+<ul>
+<li>Booked: invite within the hour, confirmation call the business day before.</li>
+<li>Follow-up agreed: call on the date they gave you. Not before.</li>
+<li>No date agreed: one call three business days later, one more a week after. Then the 60-day list.</li>
+</ul>
+<h3>Log every call, same day</h3>
+<p>Practice, contact and role, state, setting, clinician name, grafts yes/no, volume, current supplier, payer mix, what you sent, follow-up permission, next action and date, meeting details. No patient information, ever.</p>
+<h3>Never say</h3>
+<div class="never">
+<ul style="margin:0">
+<li>Any price, discount, or reimbursement number.</li>
+<li>"Medicare covers it" or "your insurance will cover it."</li>
+<li>Any specific graft name. "Over 20 grafts" is the whole answer.</li>
+<li>"It heals wounds faster" or any healing claim.</li>
+<li>"We can send samples."</li>
+<li>"We've worked with your practice" or "the doctor asked me to call" unless it happened.</li>
+<li>Anything negative about a competitor or the practice's current process.</li>
+<li>Where the company is based. You are a US-based supplier. That is enough.</li>
+<li>"Can I ask you a couple of quick questions?" Just ask the question.</li>
+</ul></div>
+<div class="row"><button class="btn" onclick="done(8)">Done, next module</button></div>
+</div>
+</section>
+
+<!-- 9 -->
+<section class="mod" id="m9">
+<div class="card">
+<h2>9. Role play</h2>
+<div class="time">30 minutes · 3 calls, 5 decisions each · 2 points for the best answer, 1 for acceptable, 0 for wrong · Pass: 90%</div>
+<div id="rpWrap"></div>
+</div>
+</section>
+
+<!-- 10 -->
+<section class="mod" id="m10">
+<div class="card">
+<h2>10. Quiz</h2>
+<div class="time">15 minutes · 15 questions · Pass: 13 of 15 (87%) · Results save under your email when you click Grade. Screenshot as backup.</div>
+<div id="quizWrap"></div>
+<div class="row"><button class="btn" id="gradeBtn" onclick="gradeQuiz()">Grade my quiz</button><button class="btn sec" onclick="resetQuiz()">Reset</button></div>
+<div id="quizResult" class="result"></div>
+<div id="summary" class="card" style="display:none;margin-top:16px"></div>
+</div>
+</section>
+
+<footer>Ovena Health internal training · Not for distribution outside the team · ovenahealth.com · (888) 338-0490</footer>
+</div>
 
 <script>
-const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbwKfxc5kFlne3IKMIoxuM78dqz_qmJmuEnFK10rgzI0-yFlPVPdQ8KPBEFD4VgQpTtkGw/exec";
+/* ---------- CONFIG ---------- */
+// Optional: paste a Google Apps Script web app URL to post results to the manager's sheet. Leave empty to save locally only.
+const SHEET_ENDPOINT = "";
+const MODS = ["Your job","What we sell","Who to call","Front desk","Script A: Grafts","Script B: Socks","Objections","Lead gate + emails","Role play","Quiz"];
+const KEY = "ovena_setter_training";
+let state = load();
+function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {} }catch(e){ return {} } }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)) }catch(e){} }
 
-let USER=null;
-const $=id=>document.getElementById(id);
-function unlock(){
-  $('gate').style.display='none';
-  $('app').style.display='block';
-  $('whoChip').textContent=(USER.name?USER.name+' · ':'')+USER.email;
+/* ---------- SIGN IN ---------- */
+function signIn(){
+  const e = document.getElementById('gEmail').value.trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)){ document.getElementById('gErr').style.display='block'; return; }
+  state.email = e; state.name = document.getElementById('gName').value.trim(); save();
+  document.getElementById('gate').style.display='none';
+  document.getElementById('who').textContent = "Signed in: " + (state.name || state.email);
 }
-function doLogin(){
-  const em=$('loginEmail').value.trim(),nm=$('loginName').value.trim();
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){
-    $('loginErr').textContent='Please enter a valid email address — Harold uses it to find your scores.';return;
-  }
-  USER={email:em.toLowerCase(),name:nm};
-  localStorage.setItem('ovena_user',JSON.stringify(USER));
-  unlock();
-  logToSheet('login',{},true);
+if(state.email){ document.getElementById('gate').style.display='none'; document.getElementById('who').textContent="Signed in: "+(state.name||state.email); }
+
+/* ---------- NAV ---------- */
+const nav = document.getElementById('nav');
+MODS.forEach((m,i)=>{ const b=document.createElement('button'); b.textContent=(i+1)+". "+m; b.onclick=()=>show(i+1); b.id="nb"+(i+1); nav.appendChild(b); });
+function show(n){
+  document.querySelectorAll('.mod').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('m'+n).classList.add('active');
+  document.getElementById('nb'+n).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
 }
-function logout(){localStorage.removeItem('ovena_user');location.reload();}
-['loginEmail','loginName'].forEach(id=>$(id).addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();}));
-(function(){const raw=localStorage.getItem('ovena_user');
-  if(raw){try{USER=JSON.parse(raw);unlock();}catch(e){}}})();
-
-function logToSheet(type,payload,quiet){
-  if(!USER)return;
-  const st=$('saveStatus');
-  const hasUrl=SHEET_ENDPOINT&&SHEET_ENDPOINT.indexOf('PASTE_')!==0;
-  if(!hasUrl){
-    if(!quiet&&st)st.innerHTML='<span style="color:var(--ok)">⚠ Sheet not connected yet.</span>';
-    return;
-  }
-  if(!quiet&&st)st.innerHTML='⏳ Sending to Harold\'s sheet…';
-  const body=Object.assign({type:type,email:USER.email,name:USER.name||'',ts:new Date().toISOString()},payload);
-  fetch(SHEET_ENDPOINT,{method:'POST',mode:'no-cors',
-    headers:{'Content-Type':'text/plain;charset=utf-8'},
-    body:JSON.stringify(body)})
-  .then(()=>{if(!quiet&&st)st.innerHTML='<b style="color:var(--good)">✔ Saved to Harold\'s sheet.</b> Screenshot too, if you like.';})
-  .catch(()=>{if(!quiet&&st)st.innerHTML='<b style="color:var(--bad)">✘ Couldn\'t reach the sheet.</b> Screenshot your score and text it to Harold.';});
+function done(n){ state.done = state.done||{}; state.done[n]=true; save(); paint(); if(n<10) show(n+1); }
+function paint(){
+  let c=0; for(let i=1;i<=10;i++){ const d=state.done&&state.done[i]; document.getElementById('nb'+i).classList.toggle('done',!!d); if(d)c++; }
+  document.getElementById('prog').style.width=(c*10)+"%";
 }
+show(1); paint();
 
-document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{
-  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));
-  document.querySelectorAll('section').forEach(x=>x.classList.remove('on'));
-  b.classList.add('on');document.getElementById(b.dataset.s).classList.add('on');
-  window.scrollTo({top:0});
-}));
-document.querySelectorAll('.check input').forEach(c=>c.addEventListener('change',e=>{
-  e.target.closest('.check').classList.toggle('done',e.target.checked);
-}));
-
-const PRODUCTS=[
-  {n:"Compression socks — $24.99 a pair",s:"pairs of socks",r:24.99},
-  {n:"Collagen 2×2 five-pack — $32.99",s:"2×2 collagen packs",r:32.99},
-  {n:"Collagen 4×4 five-pack — $55.00",s:"4×4 collagen packs",r:55.00},
-  {n:"Collagen powder five-pack — $67.99",s:"powder packs",r:67.99},
-  {n:"Collagen Care Kit 2×2 — $36.99",s:"2×2 kits",r:36.99},
-  {n:"Collagen Care Kit 4×4 — $59.99",s:"4×4 kits",r:59.99},
+/* ---------- FLASHCARDS ---------- */
+const FC = [
+ ["\"We already have a graft supplier.\"","\"Makes sense, most practices do. Is there a wound type or payer situation where you'd want a second option? That's usually what the lunch is useful for.\""],
+ ["\"We're happy with what we use.\"","\"Good to hear. Most of the clinicians we meet with are too. They take the lunch to see what else is out there without changing anything. Would [day] or [day] work for that?\""],
+ ["\"Send me some information.\"","\"Happy to. What's the best email, and who else should see it? I'll send a one-pager today and call you [day] to see if a lunch makes sense.\""],
+ ["\"What does it cost?\"","\"It depends on the product, size, and your payer mix, so I don't quote numbers on the phone. Our specialist walks through it at the lunch with real figures for your practice.\""],
+ ["\"Does Medicare cover it?\"","\"That depends on your state and the exact product, and our specialist confirms it against current policy. I can't speak to coverage, but I can get you 15 minutes with the person who can.\""],
+ ["\"We don't do grafts.\"","\"Understood. Does the practice see patients who need compression socks for swelling or vein issues?\" If no: \"Thanks for your time.\" Close."],
+ ["\"The doctor makes those decisions.\"","\"Perfect, that's who the lunch is for. What's the doctor's name, and would you be the right person to find a day that works for the team?\""],
+ ["\"I'm busy right now.\"","\"Of course. Is [specific day and time] better for a two-minute call, or would a short email be easier?\""],
+ ["\"How did you get this number?\"","\"You're listed as a wound care practice in [city]. I'm calling practices in the area that place grafts.\""],
+ ["\"We get calls like this all day.\"","\"I'm sure. The difference here is we're a direct supplier, not a distributor, and the lunch is 15 minutes with someone who answers product and payer questions directly. Worth one slot on the calendar?\""],
+ ["\"Is the doctor expecting your call?\"","Only yes if true. If you emailed yesterday: \"I'm following up on the note I sent Dr. [name] yesterday about grafts.\" If you didn't: \"Not yet. I'm reaching out about grafts for her wound care patients. Who handles her vendor schedule?\""],
+ ["\"Not interested.\"","\"Understood. Thanks for your time.\" Close the call. Log it. Do not push."],
+ ["\"Stop calling us.\"","\"I will. I'm removing you now. Thanks.\" Log as Do Not Call immediately."],
+ ["Something not on this list","\"That's a fair question, and I want to get you the right answer rather than guess. Can I have our specialist cover it at the lunch?\" Write it down, bring it to your manager."]
 ];
-const prodSel=document.getElementById('prod');
-PRODUCTS.forEach((p,i)=>prodSel.add(new Option(p.n,i)));
-const fmt=n=>'$'+n.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0});
-const fmt2=n=>'$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-function disc(q){return q>=50?0.20:q>=25?0.15:q>=10?0.10:0;}
-function calc(){
-  const p=PRODUCTS[+prodSel.value],q=+$('qty').value,d=disc(q);
-  const rate=q<=2?0.05:q>=50?0.15:0.12;
-  const unit=p.r*(1-d), total=unit*q, comm=total*rate;
-  $('qtyLab').textContent=q+' items';
-  $('oStory').innerHTML='They buy <b>'+q+' '+p.s+'</b> → they get <b>'+(d*100)+'% off</b> → they pay <b>'+fmt2(unit)+'</b> each → the order is <b>'+fmt(total)+'</b> → you keep '+(rate*100)+'% → <b>you earn '+fmt(comm)+'</b>.';
-  $('oPrice').textContent=fmt2(unit);
-  $('oTotal').textContent=fmt(total);
-  $('oComm').textContent=fmt(comm);
-  $('singleNote').textContent=q<=2?'⚠ This is a tiny order (1–2 boxes), so your cut drops to 5%. We\'ll take the sale — but go find bulk orders instead.':q>=50?'🔥 50+ items — your cut just jumped to 15%. Big orders pay you twice.':'';
-  const rungs=[['1–9','no discount'],['10+','10% off'],['25+','15% off'],['50+','20% off']];
-  const idx=q>=50?3:q>=25?2:q>=10?1:0;
-  $('ladder').innerHTML=rungs.map((r,i)=>'<div class="rung'+(i===idx?' hit':'')+'">'+r[0]+'<br>'+r[1]+'</div>').join('');
-  const nA=+$('nAcct').value||1,nR=+$('nReo').value||1;
-  const monthly=comm*nA*nR;
-  $('oMonthly').textContent=fmt(monthly);
-  $('oEarn').textContent=fmt(3500+monthly);
-  $('oYear').textContent=fmt(monthly*12);
+let fci=0;
+function fcRender(){
+  const [q,a]=FC[fci];
+  document.getElementById('fcWrap').innerHTML = `<div class="fc" onclick="this.classList.toggle('open')"><div class="q">${q}</div><div class="hint">Say your answer out loud, then click to flip.</div><div class="a">${a}</div></div>`;
+  document.getElementById('fcCount').textContent = (fci+1)+" / "+FC.length;
 }
-['prod','qty','nAcct','nReo'].forEach(id=>$(id).addEventListener('input',calc));
-calc();
+function fcMove(d){ fci=(fci+d+FC.length)%FC.length; fcRender(); }
+fcRender();
 
-const CARDS=[
- ["Question 1 · their patients","“How do you currently treat your wound care patients?”","<b>Why ask it:</b> it opens the whole conversation without pitching anything. Listen for one thing: do patients LEAVE with supplies, or get sent to a pharmacy? If they get sent away, that office is losing money it could keep — that's your MAKE-money story.<br><b>Follow-up:</b> “Do they leave with supplies, or get sent somewhere?”"],
- ["Question 2 · their suppliers","“Where do your supplies come from today — one supplier, Amazon, a bit of everywhere?”","<b>Why ask it:</b> it tells you who you're competing with, and “a bit of everywhere” is the answer you want to hear — that's 5 orders you can turn into 1 box.<br><b>Do this:</b> write down every supplier name and price they say. That's ammo."],
- ["Question 3 · their pain","“What runs out, shows up late, or costs more than it should? Who keeps track of all of it?”","<b>Why ask it:</b> whatever they complain about IS your pitch. If someone spends hours ordering from 3 websites, you say: “one order, one box, and I manage the reorders for you.” You're just repeating their complaint back — with a fix."],
- ["Question 4 · their goal","“What's the goal for these patients — healing them fast, or keeping them stable and comfortable?”","<b>The sorting question.</b> “Healing” (SNFs, podiatry, clinics) → collagen story. “Stable” (home health) → kit story. Never pitch fast healing to a stability buyer — that's how you lose home health in 30 seconds."],
- ["Question 5 · their patients' wallets","“When insurance won't pay for something like compression socks, what do your patients do?”","<b>Why ask it:</b> almost every doctor answers “honestly, they skip it.” That's your opening: “That's the gap we close. We try insurance first — and when it's a no, your patients pay $24, not $50.” Huge for lymphedema, vein and vascular doctors. <b>Remember: the we-try-insurance offer is for SOCKS only.</b> For collagen, the story is different — they bill the A-codes themselves."],
- ["Question 6 · the close","“If I could put all of that in ONE order at a better total price — would you give me 15 minutes to show you the numbers?”","<b>Why ask it:</b> it ties everything they just told you into one small, easy yes. Offer two times: “Tuesday or Thursday?” Then add the promise: “And you'd work with me directly — I manage your account personally.”"],
+/* ---------- ROLE PLAY ---------- */
+const RP = [
+ { title:"Call 1: Front desk at Lakeside Podiatry (Dana)", intro:"Website lists Dr. Ruiz and mentions 'advanced wound care and limb salvage.' You found Dana, office manager, on LinkedIn. You have not emailed yet.",
+   steps:[
+    {them:"\"Lakeside Podiatry, this is Dana.\"", opts:[
+      ["\"Hi Dana, who handles wound care supply ordering for the office?\"",1,"Works, but you did the research. Use the name."],
+      ["\"Hi, is Dr. Ruiz in the office today?\"",2,"Assumptive opener. Colleague tone, specific name, then stop."],
+      ["\"Hi Dana, I'm with Ovena Health and I'd love to tell you about our 20 amazing grafts and set up a free lunch for your staff.\"",0,"You pitched the gatekeeper and led with free lunch. That is how you get a food-only booking."]]},
+    {them:"\"She's with patients. What is this regarding?\"", opts:[
+      ["\"Grafts for the practice's wound care patients. Your site mentions advanced wound care, and we carry over 20 grafts for that. I'm trying to find 15 minutes for Dr. Ruiz and the team.\"",2,"Specific, uses their words, states the ask."],
+      ["\"She's expecting my call.\"",0,"Not true. Never claim a relationship you don't have."],
+      ["\"Just some product information. Can I email it?\"",1,"Survivable, but you gave up the conversation too early."]]},
+    {them:"\"Okay. I actually handle her vendor schedule. Quick, what do you need?\"", opts:[
+      ["\"Great. Does your team apply skin grafts in the office?\"",2,"The one qualifying question. Ask it first."],
+      ["\"Would next Tuesday or Thursday work for a lunch?\"",0,"You offered a lunch before qualifying. Free-food risk."],
+      ["\"Which graft brands is Dr. Ruiz using right now?\"",1,"Good question, but ask whether they graft at all first."]]},
+    {them:"\"Yes, Dr. Ruiz does them, maybe 8 or 10 a month. We use whatever the rep from our current company brings. Mostly Medicare.\"", opts:[
+      ["\"Perfect, so we're good to book. Tuesday or Thursday?\"",1,"You have volume and payer mix but not the clinician confirmed to attend or a named supplier. Close the gaps."],
+      ["\"Got it. Who's the current supplier, and if we set up a 15-minute lunch, would Dr. Ruiz be able to sit in?\"",2,"Fills the last two gate items: supplier named, clinician attending."],
+      ["\"Medicare usually covers our grafts, so that's a good fit.\"",0,"You spoke to coverage. Never."]]},
+    {them:"\"It's a company called Meridian or something. Yes, she'd sit in if it's at lunch. Tuesday works.\"", opts:[
+      ["\"Great, Tuesday at noon. I'll send the invite.\"",1,"Booked, but you skipped attendees, headcount, address, email, and food preferences."],
+      ["\"Great. Tuesday at noon, your time. Dr. Ruiz plus you, how many should we bring lunch for? Confirm the address and suite, best email for the invite, and any food preferences?\"",2,"Every lock-in line. The rep shows up prepared."],
+      ["\"Awesome, and we can bring samples of our best grafts too.\"",0,"Never promise samples."]]}
+   ]},
+ { title:"Call 2: Marcus, administrator at Riverbend Vein & Vascular", intro:"Vascular practice. Website says nothing about grafts. You are calling cold with no name.",
+   steps:[
+    {them:"\"Riverbend Vein and Vascular, how can I help?\"", opts:[
+      ["\"Hi, this is [name] with Ovena Health. We run a compression sock program for practices with patients who have swelling or circulation issues. Who handles patient referrals or product programs for the office?\"",2,"Right product for a vascular practice, short, asks for a role."],
+      ["\"Hi, I'm calling about skin grafts. Who does your wound care ordering?\"",1,"Not wrong, but their site shows no grafts. Lead with socks here."],
+      ["\"Hi, can I speak to the doctor please?\"",0,"No name, no reason. Straight to voicemail."]]},
+    {them:"\"That'd be Marcus, our administrator. Hold on.\" ... \"This is Marcus.\"", opts:[
+      ["\"Hi Marcus, [name] with Ovena Health. Quick one: does the practice see patients who need medical-grade compression socks, like swelling, vein issues, or lymphedema?\"",2,"Decision-maker opener, straight to the sorting question."],
+      ["\"Hi Marcus, do you mind if I ask you a couple of quick questions?\"",0,"Never ask permission to ask. Just ask."],
+      ["\"Hi Marcus, we sell compression socks for $24 a pair, much cheaper than retail.\"",0,"You quoted a price. Never."]]},
+    {them:"\"Every day. We tell them to go buy a pair at the pharmacy. Half of them never do.\"", opts:[
+      ["\"That's exactly the gap. Your office refers the patient, we check coverage, and we ship the socks. No inventory or billing on your side. Worth 15 minutes?\"",2,"Reflects their pain, states the program, asks for the meeting."],
+      ["\"Pharmacies are terrible at this, honestly.\"",0,"Never knock the pharmacy or anyone else."],
+      ["\"We can fix that. Which brands do you recommend now?\"",1,"Fine question, but you missed the moment to state the program."]]},
+    {them:"\"Maybe. Does insurance actually pay for these?\"", opts:[
+      ["\"Most plans do, yes.\"",0,"Coverage claim. Never."],
+      ["\"Our team confirms that per patient when they run the coverage check. I don't quote coverage on the phone because it depends on the plan. That's what the walkthrough covers.\"",2,"Honest, routes to the team, keeps the meeting as the next step."],
+      ["\"I'm not sure, let me find out and call you back.\"",1,"Honest, but you lost the momentum. Route to the team instead."]]},
+    {them:"\"Alright. I'd need our nurse Priya on it too. Can you do a call rather than a lunch?\"", opts:[
+      ["\"Absolutely. 15 minutes by phone with you, Priya, and our specialist. Thursday at 1:30 or Friday at 10:00, your time? And the best email for the invite?\"",2,"Call is a win. Two times offered, attendees named, email requested."],
+      ["\"We really prefer to do lunches. Can we do that instead?\"",0,"You pushed the lunch over what they asked for."],
+      ["\"Sure, I'll email you some times.\"",1,"Agreed follow-up, but you had the booking in hand and let it go."]]}
+   ]},
+ { title:"Call 3: Chris, office manager at Summit Wound Care", intro:"Dedicated wound clinic. Chris is friendly and very interested in the lunch. Something feels off.",
+   steps:[
+    {them:"\"Oh, a lunch and learn? We LOVE those. Our staff would be thrilled. When can you come?\"", opts:[
+      ["\"How about next Wednesday?\"",0,"You booked on enthusiasm. No qualifying done."],
+      ["\"Glad to hear it. Before I put our team on the road, quick question: does your team apply skin grafts in the clinic, and who places them?\"",2,"Warm, but you ran the gate first."],
+      ["\"Great! How many people should we feed?\"",0,"You asked about headcount before you asked about grafts."]]},
+    {them:"\"Oh yeah, we do all kinds of wound stuff. The doctors handle it. So Wednesday?\"", opts:[
+      ["\"Which doctor places the grafts, and roughly how many graft patients a month? I want to make sure it's worth their time too.\"",2,"Pins down clinician and volume. 'All kinds of wound stuff' is not an answer."],
+      ["\"Sounds good. Wednesday at noon works for us.\"",0,"Still unqualified. This is the free lunch."],
+      ["\"What products are you using now?\"",1,"Useful, but clinician and volume are the bigger gaps."]]},
+    {them:"\"Umm, I'd have to check. The doctors are really busy, they might pop in. But the staff would definitely be there.\"", opts:[
+      ["\"No problem, the staff is great. Wednesday it is.\"",0,"Clinician not confirmed. Red flag ignored."],
+      ["\"Understood. Let's start with a 15-minute call with the doctor who places grafts and our specialist. If it's a fit, we'll set up the lunch from there. Can you get me their name and a time they're free?\"",2,"Downgraded to a call. Lunch only follows qualification."],
+      ["\"We can only do the lunch if a doctor is there.\"",1,"Right rule, blunt delivery. Offer the call as the alternative."]]},
+    {them:"\"Okay... Dr. Okafor. She does maybe 15 grafts a month, mostly Medicare, we use two different brands. She's free Friday mornings.\"", opts:[
+      ["\"Perfect. Now the lunch makes sense. Friday at 11:30 with Dr. Okafor, you, and our team? Confirm attendees, headcount, address, email, and food preferences?\"",2,"Gate cleared: grafts, volume, clinician, supplier, payer mix. Now book the lunch and lock it in."],
+      ["\"Great, I'll have our specialist call her Friday.\"",1,"Acceptable, but you now qualify for the lunch. Take it."],
+      ["\"Fifteen a month on Medicare, our grafts will be covered no problem.\"",0,"Coverage claim. Never."]]},
+    {them:"\"Friday 11:30 works. 6 people. 400 Summit Ave Suite 210, chris@summitwound.com. No restrictions.\"", opts:[
+      ["\"Perfect. Invite within the hour, and I'll call Thursday to confirm Dr. Okafor is still able to join. Thanks, Chris.\"",2,"Invite, confirmation call naming the clinician, close."],
+      ["\"Awesome, see you Friday!\"",1,"Booked, but no confirmation call set. If Dr. Okafor drops, you feed the staff."],
+      ["\"Great, and I'll bring our pricing sheet so you can see how affordable we are.\"",0,"Never attach or promise pricing. Specialist handles it."]]}
+   ]}
 ];
-$('flashwrap').innerHTML=CARDS.map((c,i)=>'<div class="flash" onclick="this.classList.toggle(\'flip\')"><div class="inner"><div class="face front"><div class="t">'+c[0]+'</div><div class="q">'+c[1]+'</div></div><div class="face back"><div>'+c[2]+'</div></div></div></div>').join('');
-
-const RP=[
- {t:"Call 1 · Dr. Patel — Podiatrist",steps:[
-  {say:"Front desk: “Doctor's with patients. What's this about?”",ctx:"You get one sentence before she filters you out. Make it count.",opts:[
-   ["“Hi! I have an exciting opportunity for the doctor — is he free?”",0,"Filtered instantly. 'Exciting opportunity' = telemarketer. Front desks hear this 20 times a day."],
-   ["“Quick question — who handles wound care supply ordering for the practice? I may be able to cut what you're paying, and I'll be fast.”",2,"You gave her a real reason and asked for a real person. Front desks route problems to whoever owns them — you just asked for that person."],
-   ["“I'm Alexis with Ovena, a wound care supplier. Could I leave a message for Dr. Patel?”",1,"Polite, but messages die. Better to find the person who orders supplies and talk to them right now."]]},
-  {say:"Dr. Patel picks up: “You've got 90 seconds. Go.”",ctx:"He's a foot doctor — remember, podiatrists can SELL our stuff to their patients.",opts:[
-   ["“We sell FDA-cleared type I bovine collagen in 2×2, 4×4 and powder formats, plus kits and compression…”",0,"Product dump. He didn't ask what you sell — he wants to know why he should care. Clock's ticking."],
-   ["“I'll be quick — I know supplies aren't where you make your money. Quick question: how do your wound care patients get their supplies today — do they leave with them, or get sent somewhere?”",2,"You opened with his reality, then asked THE question. Whatever he answers writes your next line for you."],
-   ["“We have the best prices on collagen. Want me to email a catalog?”",1,"Price-only, and it invites 'sure, email it' — which is the polite version of hanging up."]]},
-  {say:"“We write prescriptions. Patients get supplies wherever — pharmacy, Amazon, whatever they figure out.”",ctx:"There it is: money walking out his door every day.",opts:[
-   ["“That works! And our website is cheaper than Amazon for them.”",1,"True, but tiny. You just skipped the biggest number on this call — the money HE could be making."],
-   ["“So every wound patient is money walking out your door. Here's what our podiatry partners do: buy kits and socks from us at wholesale, sell them right in the office at your price, keep the profit — and the patient leaves with everything, same day. Want to see that math?”",2,"The MAKE-money story, told in HIS interest, ending with a question. This is the pitch foot doctors actually want to hear."],
-   ["“You should stock our collagen — patients love it.”",0,"'Patients love it' is not a business reason. Tell him what HE gets: profit, convenience, same-day supply."]]},
-  {say:"“What about compression socks — will my patients' insurance cover those?”",ctx:"Careful. Answer wrong and you either lie or kill the deal.",opts:[
-   ["“Yes, insurance covers them.”",0,"NEVER promise coverage. The first denied claim destroys your credibility — and the account with it."],
-   ["“Honestly? Sometimes. As your partner we try insurance first. When it's a no, your patients pay our partner price — $24 a pair plus shipping, instead of $40–60 at the store. Either way they walk out of your office with socks, same day.”",2,"Honest, specific, and it wins both ways — covered or not, the patient gets socks and the doctor looks good."],
-   ["“No — but they're cheap, only $24.”",1,"Right price, but you threw away half the story. 'We try insurance first' is what makes it a partnership."]]},
-  {say:"“Okay, interesting. What now?”",ctx:"Close it — but size the ask right. He's busy.",opts:[
-   ["“Let's start you with our 50-unit package — biggest discount.”",0,"Way too big for a first order. Big first asks stall deals. Start small, upgrade later — that's our whole model."],
-   ["“I'll email you our catalog and pricing to look over.”",1,"You had him LIVE and traded it for an email he'll never open. Always turn interest into a calendar slot."],
-   ["“Give me 15 minutes with the numbers — your cost, your patient price, your profit per sale. Tuesday or Thursday? And you'd work directly with me — I manage your account and reorders personally.”",2,"Small ask, two time options, and the account-manager promise. That's the close."]]}]},
- {t:"Call 2 · Maria — Home Health Boss",steps:[
-  {say:"Maria: “I've got a meeting in five minutes. What is it?”",ctx:"Home health. 30 field nurses. Rule one: do NOT lead with collagen.",opts:[
-   ["“We make collagen dressings that restart stalled wounds — huge for healing outcomes.”",0,"Wrong story for this buyer. Home health wants stable patients and fewer headaches — not fast healing. You just became every clinical rep she dodges."],
-   ["“Two minutes, promise. We put a complete dressing change — foam dressing, roll gauze, wound wash, tape, gloves — in ONE box, cheaper than buying the five things separately. Agencies use it so every nurse's bag is packed the same. Worth a look?”",2,"The SAVE-money story in her language: the box, the bag, the five things. That's home health."],
-   ["“We're a premium US-based wound care supplier — I'd love to introduce Ovena.”",1,"Fine, but generic. 'Premium supplier' doesn't survive a 5-minute window. Lead with the box."]]},
-  {say:"“Our problem isn't dressings. My nurses are spread thin, and half my week is supply chases and missing items in the field.”",ctx:"She just handed you her pain. Repeat it back — with your fix.",opts:[
-   ["“That's exactly why the kit exists: every nurse carries the same box, nothing's missing in a patient's living room, and reorders run themselves — I manage them. Fewer supply chases is literally the product.”",2,"You repeated her complaint back with the fix attached. She's not buying wound care — she's buying her week back."],
-   ["“Our collagen can speed up healing, which means fewer visits per patient.”",0,"Still pushing collagen at a stability buyer. She TOLD you the problem is logistics, not healing speed. Listen."],
-   ["“We have great bulk pricing that would save you money.”",1,"Price matters, but she led with chaos, not cost. Fix the chaos first — then the price lands harder."]]},
-  {say:"“We already buy gauze for pennies from our distributor.”",ctx:"The classic objection. Don't argue about gauze.",opts:[
-   ["“Our gauze is higher quality than theirs.”",0,"Arguing gauze is a losing fight — and it accepts her framing. Gauze was never the point."],
-   ["“Gauze, sure. But add the dressing, tape, wash and gloves — that's five things, shipping on each, and someone tracking it all. What does a COMPLETE dressing change cost you, delivered? If I beat that with one box, would you try a small pack with two nurses?”",2,"You moved the fight from 'price of gauze' to 'cost of the whole change' — a fight we win — and ended with a tiny ask."],
-   ["“I can probably beat their pricing — want a quote?”",1,"You're negotiating against a number you haven't even seen yet. Get her total cost per change first."]]},
-  {say:"“Maybe. Send me some info and I'll look when things calm down.”",ctx:"The polite brush-off. 'Send info' with no next step = a no.",opts:[
-   ["“Sure! What's your email?”",0,"That info dies in her inbox and you both know it. Never accept 'send info' without booking the follow-up."],
-   ["“Absolutely — one page, not a brochure. And so it doesn't sit in your inbox: can I grab ten minutes Thursday to walk through the numbers? If we're not cheaper than what you pay now, I'll tell you so myself.”",2,"Send the info AND book the slot — plus that last line ('I'll tell you myself') builds instant trust with a busy boss."],
-   ["“Things never calm down though, right? Let's just do it now.”",1,"Right instinct, but you're steamrolling her 5-minute warning. Book the near-term slot instead."]]},
-  {say:"Thursday's call: “Okay, the math works. How do we start?”",ctx:"Size the first order the way our model says.",opts:[
-   ["“Most agencies start with the large pack — best per-unit price.”",1,"True on paper, but a big first order slows down the yes. The discount ladder rewards her at reorder time — save it for then."],
-   ["“Small pack, two nurses, this month. If their supply chases drop, we roll it out to the whole team — and the bigger pack drops your cost per change. I'll check in with you personally at week two.”",2,"Small, low-risk, measurable, with the upgrade path built in. Start small and grow — exactly our model."],
-   ["“I'll have our team send a contract for a standing monthly order.”",0,"A contract before she's seen the kit in the field? Too much, too fast. Pilot first."]]}]},
- {t:"Call 3 · Chris — Clinic Office Manager",steps:[
-  {say:"Chris: “We're pretty locked in with McKesson. Why should I even take this call?”",ctx:"Wound clinic. Watches every dollar. Earn the next 60 seconds.",opts:[
-   ["“Because we're cheaper than McKesson.”",1,"Maybe true — but a bare price claim before any discovery invites 'prove it' before you know what he pays."],
-   ["“Fair question. Before I claim anything — how do you actually buy today? Everything through McKesson, or do dressings, wash and tape come from different places?”",2,"Ask before you claim. 'Locked in' usually means 'locked into a mess' — go find the mess."],
-   ["“McKesson's a giant — we're a premium boutique alternative.”",0,"To a guy who watches every dollar, 'boutique' means 'expensive.' Wrong word, wrong buyer."]]},
-  {say:"“Mostly McKesson, some Amazon when we run out. Why?”",ctx:"'Amazon when we run out' = they run out AND pay retail. That's your opening.",opts:[
-   ["“Because 'Amazon when we run out' is the expensive way. What does a complete dressing change cost you, delivered — dressing, gauze, wash, tape, gloves, shipping? Our kit is one item, one price, auto-reordered so 'we ran out' stops happening. Worth comparing?”",2,"You caught the tell and turned it into total-cost math plus the auto-reorder fix. Strong."],
-   ["“We can be your backup when McKesson runs out!”",0,"You just pitched yourself into the Amazon slot — the occasional, retail-priced backup. Aim at the MAIN spend."],
-   ["“Amazon's pricing is retail — we're wholesale. Want a price list?”",1,"Right direction, but a bare price list lets him compare item-by-item — the game the big distributor wins. Compare cost per CHANGE."]]},
-  {say:"“Look, everyone says they're cheaper. Give me 30% off and we'll talk.”",ctx:"The squeeze. Your ladder tops out at 20% off at 50+ items.",opts:[
-   ["“Deal — 30% off if you order today.”",0,"You just invented a discount that doesn't exist and torched our pricing. NEVER make up a price on the phone."],
-   ["“I'll be straight with you: it's 10% off at 10 items, 15% at 25, 20% at 50 — and that 20% is the floor. Anything deeper only comes with a standing monthly order, and that's my boss's call. Want me to ask him today?”",2,"You showed the ladder, held the floor, and gave him a real path to more (standing order, through Harold). Squeezers respect a straight answer."],
-   ["“Sorry, 30% isn't possible. 20% is our max.”",1,"You held the line — good — but you closed the door instead of opening the standing-order path. Always give a squeezer a way to win."]]},
-  {say:"“Money's tight this quarter. Big orders are hard for us right now.”",ctx:"This is the ONE moment for your emergency back-pocket card. Money is the last thing blocking the deal.",opts:[
-   ["“Then start with just a few units.”",1,"Works — but this was the one right moment for the back-pocket card, and you left it in your pocket."],
-   ["“For situations exactly like this, I can do split terms: 50% now, the other half in 30 days. Order what the clinic needs, not what the checkbook allows this week. I'd just need to get you approved with my team first.”",2,"The emergency card, played at the ONLY right moment — money was the last blocker. 50% now, rest in 30 days, with the honest 'approval needed' caveat. Never open a call with this; it loses all its power."],
-   ["“Maybe we should wait until next quarter then?”",0,"You just postponed your own deal. Money-is-tight has an answer — the split-terms card. Use it."]]},
-  {say:"“Alright, you've earned 15 minutes. Book it. Anything else?”",ctx:"Meeting won. One more move before you hang up.",opts:[
-   ["“Nope, that's everything — see you Tuesday!”",1,"Clean close, but you left the multiplier on the table. Every good call ends with the referral ask."],
-   ["“One thing — you talk to other clinic managers. Who else do you know that's juggling supplies from three places? An intro is the biggest favor you could do me, and I'll take care of them the way I'll take care of you.”",2,"The referral ask, framed as a favor with a service promise. This is how one good call becomes three."],
-   ["“Yes — could you commit to an order size before the meeting?”",0,"Pushy and backwards. The meeting is where the order gets sized. Don't make his yes feel like a trap."]]}]}
-];
-let rpS=0,rpI=0,rpPts=0;const rpBest=[null,null,null];
-function startRP(s){rpS=s;rpI=0;rpPts=0;
-  document.getElementById('rpHome').style.display='none';
-  document.getElementById('rpDone').style.display='none';
-  document.getElementById('rpPlay').style.display='block';
-  renderStep();}
-function renderStep(){
-  const sc=RP[rpS],st=sc.steps[rpI];
-  document.getElementById('rpTitle').textContent=sc.t+' · Decision '+(rpI+1)+' of '+sc.steps.length;
-  document.getElementById('rpBar').style.width=(rpI/sc.steps.length*100)+'%';
-  document.getElementById('rpSay').innerHTML='<span class="who2">They say</span>'+st.say;
-  document.getElementById('rpCtx').textContent=st.ctx;
-  const shuffled=st.opts.map((o,i)=>i).sort(()=>Math.random()-0.5);
-  document.getElementById('rpOpts').innerHTML=shuffled.map(i=>'<button class="opt" onclick="pick(this,'+i+')">'+st.opts[i][0]+'</button>').join('');
-  document.getElementById('rpFb').className='fb';document.getElementById('rpNext').style.display='none';}
-function pick(el,i){
-  const st=RP[rpS].steps[rpI],q=st.opts[i][1];
-  rpPts+=q;
-  document.querySelectorAll('#rpOpts .opt').forEach(b=>b.disabled=true);
-  el.classList.add('picked-'+q);
-  const fb=document.getElementById('rpFb');
-  fb.className='fb show '+(q===2?'g':q===1?'o':'b');
-  fb.innerHTML='<b>'+(q===2?'✔ Best move (+2). ':q===1?'△ Okay (+1). ':'✘ Miss (+0). ')+'</b>'+st.opts[i][2];
-  document.getElementById('rpNext').style.display='inline-block';}
-function rpNext(){rpI++;
-  if(rpI<RP[rpS].steps.length){renderStep();return;}
-  const max=RP[rpS].steps.length*2,pct=Math.round(rpPts/max*100);
-  if(rpBest[rpS]===null||pct>rpBest[rpS])rpBest[rpS]=pct;
-  logToSheet('roleplay',{scene:RP[rpS].t,score:rpPts,total:max,pct:pct+'%',
-    passed:pct>=88?'PASS':'FAIL',
-    notes:'session best '+rpBest[rpS]+'%'},true);
-  document.getElementById('rpPlay').style.display='none';
-  document.getElementById('rpDone').style.display='block';
-  document.getElementById('rpScore').textContent=rpPts+' / '+max+' · '+pct+'%';
-  document.getElementById('rpLogNote').textContent=SHEET_ENDPOINT.indexOf('PASTE_')!==0?'This attempt was logged to Harold\'s sheet.':'';
-  document.getElementById('rpVerdict').innerHTML=pct>=88?'<b style="color:var(--good)">Call-ready. ✔</b> Go play the next one.':pct>=70?'<b style="color:var(--ok)">Close.</b> Re-read the feedback on your misses, then play it again — you need 88%+.':'<b style="color:var(--bad)">Play it again.</b> Re-read "Who We Call" and "The Questions" first — every answer lives in those two tabs.';}
-function quitRP(){
-  document.getElementById('rpPlay').style.display='none';
-  document.getElementById('rpDone').style.display='none';
-  document.getElementById('rpHome').style.display='block';
-  rpBest.forEach((b,i)=>{if(b!==null)document.getElementById('rps'+i).textContent='Best score: '+b+'%'+(b>=88?' ✔':' — play again');});}
-
-const QUIZ=[
- ["Your commission is a percent of…",["The full retail price","The discounted price the customer actually pays","Ovena's profit on the order"],1,"You get paid on what the customer actually pays (after their discount)."],
- ["A customer buys just 1 or 2 boxes. Your cut is…",["Your normal level","Zero","5%"],2,"We'll sell 1 or 2 boxes — but tiny orders pay you 5%. Don't chase them; hunt bulk orders that repeat."],
- ["A foot doctor orders 25 pairs of socks. Their discount is…",["10%","15%","20%"],1,"The ladder: 10% off at 10+, 15% off at 25+, 20% off at 50+. So 25 pairs = 15% off."],
- ["An order hits 50+ items. Your cut…",["Stays at 12%","Jumps to 15%","Drops — big discounts mean less for you"],1,"Big orders pay you twice: the order total is bigger AND your percent jumps from 12% to 15% at 50+ items."],
- ["What do we do about insurance for COLLAGEN?",["We try insurance for the patient, like with socks","Nothing — we tell the office the A-codes and what they reimburse (2×2/4×4 ≈ $19–$25 a piece, powder ≈ $40/gram), and THEY bill it","We bill Medicare for them"],1,"The we-try-insurance offer is socks only. For collagen, we just show offices the A-code math — what they could make if they bill — and they handle everything else."],
- ["Calling a home health agency, you lead with…",["Collagen — the healing story","The Wound Care Kit — same box in every nurse's bag, nothing missing, one order","Compression socks"],1,"Home health wants stable patients and fewer headaches — not fast healing. Collagen only comes up when a wound is stuck."],
- ["A SNF (skilled nursing facility) cares most about…",["The lowest possible price","Actually healing wounds — inspectors grade them on it","Selling products to patients"],1,"SNFs get graded on wound healing. For them, healing IS the product — the opposite of home health."],
- ["Which doctors are the #1 target for compression socks?",["Dermatologists","Lymphedema, vein and vascular doctors (and podiatrists)","Dentists"],1,"Compression IS the treatment for lymphedema, vein surgery recovery, and circulation problems. Their big pain: patients skip $50 store socks — our $24 price fixes that."],
- ["A partner's patient gets denied by insurance for socks. The patient…",["Pays $24.99 retail plus tax","Pays $24 a pair, plus shipping","Pays nothing — we bill Medicare"],1,"We try insurance first. If it's a no, the partner price is $24 a pair + shipping (vs $40–60 in stores). We do NOT bill Medicare — we're a cash business."],
- ["A buyer demands 30% off. You…",["Give it to them — a deal's a deal","Show the ladder (tops at 20% at 50+), offer the standing-order path, and check with Harold the same day","Hang up"],1,"Never make up a price. The ladder is the ladder. Deeper discounts only come with a standing monthly order — and that's Harold's call."],
- ["The right size for a FIRST order is…",["The 50+ pack — biggest discount for them","Small — an easy yes now, then upgrade the pack size at reorder #2 or #3","Whatever they'll sign"],1,"Start small and grow. Small first orders close fast, and the ladder gives customers a reason to size up later."],
- ["What are you selling THIS month?",["Collagen, collagen kits, and compression socks — that's the whole bag","Everything, including the new silicone foam kit","Only compression socks"],0,"The stand-alone silicone foam kit is about 30 days away. Tease it ('next month I'll have something new for you') — but don't sell it yet."],
- ["The MAKE-money story for foot doctors is…",["Our collagen heals faster than the competition","They buy from us at wholesale, sell to patients at their own price, and keep the profit","We give doctors a personal discount"],1,"Buy wholesale, sell at their price, keep the profit — and the patient walks out with everything, same day. That's the pitch."],
- ["Your best opening question on a call is…",["“Can I tell you about Ovena?”","“How do you currently treat your wound care patients?”","“What's your supply budget?”"],1,"Open with THEIR world, not our products. Their answer tells you which story to tell. Budget questions come later."],
- ["After a customer signs up, who takes care of them?",["Harold","A customer service line","You — you're their account manager"],2,"You own the account: reorders, check-ins, upgrades. That's also where your monthly commission keeps coming from."],
-];
-document.getElementById('quizSub').textContent=QUIZ.length+' questions. Answer them all and hit Grade — your score is sent to Harold\'s sheet automatically.';
-document.getElementById('quizwrap').innerHTML=QUIZ.map((q,i)=>'<div class="card"><div class="qnum">QUESTION '+(i+1)+' OF '+QUIZ.length+'</div><p class="qq">'+q[0]+'</p>'+q[1].map((o,j)=>'<button class="opt" data-q="'+i+'" data-o="'+j+'" onclick="qPick(this)">'+o+'</button>').join('')+'<div class="fb" id="qfb'+i+'"></div></div>').join('');
-const qAns=new Array(QUIZ.length).fill(null);
-function qPick(el){const i=+el.dataset.q;qAns[i]=+el.dataset.o;
-  document.querySelectorAll('[data-q="'+i+'"]').forEach(b=>{b.classList.remove('picked-2');});
-  el.classList.add('picked-2');}
-function bumpAttempt(){
-  const k='ovena_att_'+(USER?USER.email:'anon');
-  const n=(+localStorage.getItem(k)||0)+1;
-  localStorage.setItem(k,n);return n;}
-function gradeQuiz(){
-  $('gradeBtn').disabled=true;
-  let right=0;
-  QUIZ.forEach((q,i)=>{
-    const fb=document.getElementById('qfb'+i);
-    if(qAns[i]===null){fb.className='fb show o';fb.innerHTML='<b>You skipped this one.</b>';return;}
-    const ok=qAns[i]===q[2];if(ok)right++;
-    fb.className='fb show '+(ok?'g':'b');
-    fb.innerHTML='<b>'+(ok?'✔ Correct. ':'✘ Not quite. ')+'</b>'+q[3];
-    document.querySelectorAll('[data-q="'+i+'"]').forEach(b=>{b.disabled=true;if(+b.dataset.o===q[2])b.classList.add('picked-2');else if(+b.dataset.o===qAns[i]&&!ok){b.classList.remove('picked-2');b.classList.add('picked-0');}});
+let rpScore = {};
+function rpRender(){
+  const w=document.getElementById('rpWrap'); w.innerHTML="";
+  RP.forEach((c,ci)=>{
+    const d=document.createElement('div'); d.className="scene";
+    d.innerHTML=`<h4 style="margin-top:0">${c.title}</h4><p style="font-size:14px;color:var(--mute)">${c.intro}</p>`;
+    c.steps.forEach((s,si)=>{
+      const st=document.createElement('div'); st.style.marginTop="12px";
+      st.innerHTML=`<div class="them">${s.them}</div>`;
+      const fb=document.createElement('div'); fb.className="fb";
+      s.opts.forEach((o,oi)=>{
+        const b=document.createElement('button'); b.className="opt"; b.textContent=o[0];
+        b.onclick=()=>{
+          st.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+          const best=Math.max(...s.opts.map(x=>x[1]));
+          s.opts.forEach((x,k)=>{ if(x[1]===best) st.querySelectorAll('.opt')[k].classList.add('right'); });
+          if(o[1]<best) b.classList.add('wrong');
+          fb.textContent=(o[1]===2?"Best answer. ":o[1]===1?"Acceptable, not best. ":"Wrong. ")+o[2];
+          fb.className="fb show "+(o[1]===2?"good":"badfb");
+          rpScore[ci+"-"+si]=o[1]; rpTotal(ci);
+        };
+        st.appendChild(b);
+      });
+      st.appendChild(fb); d.appendChild(st);
+    });
+    const sc=document.createElement('div'); sc.className="score"; sc.id="rps"+ci; sc.textContent="Score: 0 / 10"; d.appendChild(sc);
+    w.appendChild(d);
   });
-  const pct=Math.round(right/QUIZ.length*100);
-  const attempt=bumpAttempt();
-  const answers=QUIZ.map((q,i)=>qAns[i]===null?'—':'ABC'[qAns[i]]);
-  logToSheet('quiz',{score:right,total:QUIZ.length,pct:pct+'%',
-    passed:pct>=88?'PASS':'FAIL',attempt:attempt,answers:answers,rpBest:rpBest.slice()});
-  document.getElementById('quizResult').innerHTML='<div class="score-big">'+right+' / '+QUIZ.length+'</div><div class="result-badge">'+pct+'% · attempt #'+attempt+' — '+(pct>=88?'Call-ready. 🎉':pct>=70?'Almost there — check your misses and retake.':'Go back through the tabs, then retake.')+'</div><br><button class="btn ghost" style="margin-top:10px" onclick="resetQuiz()">Retake the quiz</button>';
-  window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});}
-function resetQuiz(){
-  qAns.fill(null);
-  document.querySelectorAll('#quizwrap .opt').forEach(b=>{b.disabled=false;b.classList.remove('picked-2','picked-0');});
-  QUIZ.forEach((q,i)=>{document.getElementById('qfb'+i).className='fb';});
-  document.getElementById('quizResult').innerHTML='';
-  document.getElementById('saveStatus').innerHTML='';
-  document.getElementById('gradeBtn').disabled=false;
-  window.scrollTo({top:0});}
+  const fin=document.createElement('div'); fin.className="row";
+  fin.innerHTML=`<button class="btn" onclick="rpFinish()">Submit role play</button><span id="rpOverall" class="score"></span>`;
+  w.appendChild(fin);
+}
+function rpTotal(ci){ let t=0,n=0; for(let k in rpScore){ if(k.startsWith(ci+"-")){t+=rpScore[k];n++;} } document.getElementById('rps'+ci).textContent=`Score: ${t} / 10 (${n} of 5 answered)`; }
+function rpFinish(){
+  const answered=Object.keys(rpScore).length; if(answered<15){ alert("Answer all 15 decisions first. "+answered+" done."); return; }
+  const t=Object.values(rpScore).reduce((a,b)=>a+b,0); const pct=Math.round(t/30*100);
+  document.getElementById('rpOverall').textContent=`Overall: ${t}/30 (${pct}%) ${pct>=90?"PASS":"Below 90%. Re-read modules 4, 5, 8 and retake."}`;
+  state.roleplay=state.roleplay||[]; state.roleplay.push({at:new Date().toISOString(),score:t,pct}); save();
+  post({type:"roleplay",score:t,pct});
+  if(pct>=90) done(9);
+}
+rpRender();
+
+/* ---------- QUIZ ---------- */
+const QZ = [
+ {q:"Your single job on every call is to:",o:["Close a graft sale over the phone","Book a qualified Lunch & Learn or call with a practice that places grafts","Explain which graft fits which wound","Collect emails"],a:1,e:"You set the meeting. The rep sells."},
+ {q:"How many grafts does Ovena carry, and how do you describe them?",o:["About 5, for diabetic ulcers","Over 20, for conservative and advanced wound care","Over 50, all Medicare-covered","You name the top three brands"],a:1,e:"Over 20 grafts for conservative and advanced wound care. Never name a product."},
+ {q:"The one question that qualifies a graft lead:",o:["How many patients do you see?","Who's your supplier?","Does your team apply skin grafts in the office?","Would you like a lunch and learn?"],a:2,e:"Ask it before anything else."},
+ {q:"A decision-maker asks, 'Does Medicare cover your grafts?' You say:",o:["Yes, in most states","It depends on your state and product, and our specialist confirms it against current policy. I can get you 15 minutes with the person who can.","I'll look it up and email you","Our grafts are FDA cleared so they're covered"],a:1,e:"Never speak to coverage. FDA clearance does not establish coverage."},
+ {q:"Which of these is NOT one of the five items required before you may offer a lunch?",o:["Clinician named and attending","Volume per month","Headcount for lunch","Current product or supplier named"],a:2,e:"Headcount is a lock-in detail after the lunch is justified, not a qualifier."},
+ {q:"The office manager loves lunch and learns but 'the doctors might pop in.' You:",o:["Book the lunch; staff relationships matter","Offer a 15-minute call with the graft-placing clinician first; lunch follows if it's a fit","Decline and hang up","Ask how many people to feed"],a:1,e:"No clinician, no lunch."},
+ {q:"Best way to get past the front desk:",o:["Say the doctor is expecting your call","Ask who handles ordering","Research the clinician's name first and ask for them by name with a specific reason","Call after hours and leave voicemails"],a:2,e:"Name plus reason gets routed. Never claim an expected call unless you emailed first."},
+ {q:"When may you say 'I'm following up on the note I sent Dr. X'?",o:["Any time, it works","Only when you actually sent the email the day before","Only if the practice is in your state","Never"],a:1,e:"Email first, call second. Then it's true."},
+ {q:"A vascular practice says they don't do grafts. Next move:",o:["Thank them and hang up","Pitch the compression sock program","Ask if they'd like a lunch anyway","Ask for a referral to a wound clinic"],a:1,e:"Vascular is the prime sock target."},
+ {q:"They ask what compression socks cost. You say:",o:["$24 a pair plus shipping","Our team confirms that per patient when they run the coverage check; it depends on the plan","Cheaper than the pharmacy","I'll send a price list"],a:1,e:"No prices on the phone. Ever."},
+ {q:"Which email goes out after a graft conversation where you also mentioned socks?",o:["Both emails separately","Sock email only","Graft email with one line about socks at the end","Neither; wait for the rep"],a:2,e:"One email, graft first, socks as one line."},
+ {q:"Maximum length of your follow-up email:",o:["One page","Under 90 words","200 words","No limit if it's helpful"],a:1,e:"People don't read long emails."},
+ {q:"The day before a booked lunch you:",o:["Send a reminder email","Call the office and confirm the clinician is still able to join; reschedule if not","Confirm the food order","Nothing; the invite is enough"],a:1,e:"Clinician dropped means reschedule, not feed the front desk."},
+ {q:"Which is on the Never Say list?",o:["'Over 20 grafts for conservative and advanced wound care'","'Our team confirms coverage per patient'","'We can send samples'","'Is Dr. Ruiz in the office today?'"],a:2,e:"Samples are the rep's call. Also never: prices, coverage, product names, healing claims, where we're based."},
+ {q:"'Send me some information' with no name, no email, no callback date is:",o:["A win","A follow-up","Not a win; get all three or it doesn't count","A lost lead"],a:2,e:"Name, email, and date, or it isn't logged as a follow-up."}
+];
+function quizRender(){
+  const w=document.getElementById('quizWrap'); w.innerHTML="";
+  QZ.forEach((q,i)=>{
+    const d=document.createElement('div'); d.className="qq"; d.id="q"+i;
+    d.innerHTML=`<p>${i+1}. ${q.q}</p>`+q.o.map((o,k)=>`<label><input type="radio" name="q${i}" value="${k}"> ${o}</label>`).join("")+`<div class="exp">${q.e}</div>`;
+    w.appendChild(d);
+  });
+}
+function gradeQuiz(){
+  let c=0, ans=[];
+  QZ.forEach((q,i)=>{
+    const d=document.getElementById('q'+i); const s=d.querySelector('input:checked'); const v=s?+s.value:-1; ans.push(v);
+    d.classList.remove('correct','incorrect'); d.classList.add('graded', v===q.a?'correct':'incorrect'); if(v===q.a)c++;
+  });
+  const pass=c>=13; const r=document.getElementById('quizResult');
+  r.className="result "+(pass?"pass":"fail"); r.textContent=`${c} / 15 (${Math.round(c/15*100)}%) ${pass?"PASS. You're ready to call with supervision.":"Below 87%. Re-read the modules you missed and retake."}`;
+  state.quiz=state.quiz||[]; state.quiz.push({at:new Date().toISOString(),score:c,answers:ans}); save();
+  post({type:"quiz",score:c,answers:ans.join("|")});
+  if(pass) done(10);
+  showSummary();
+}
+function resetQuiz(){ quizRender(); document.getElementById('quizResult').className="result"; }
+function showSummary(){
+  const s=document.getElementById('summary'); s.style.display="block";
+  const rp=(state.roleplay||[]).map(r=>`${r.score}/30 (${r.pct}%)`).join(", ")||"not submitted";
+  const qz=(state.quiz||[]).map(r=>`${r.score}/15`).join(", ");
+  s.innerHTML=`<h3 style="margin-top:0">Your record (screenshot this)</h3><p><b>${state.name||""}</b> ${state.email}</p><p>Role play attempts: ${rp}</p><p>Quiz attempts: ${qz}</p><p style="font-size:13px;color:var(--mute)">${SHEET_ENDPOINT?"Results were also posted to the manager's sheet.":"Send this screenshot to your manager."}</p>`;
+}
+function post(d){
+  if(!SHEET_ENDPOINT) return;
+  try{ fetch(SHEET_ENDPOINT,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(Object.assign({email:state.email,name:state.name,at:new Date().toISOString()},d))}); }catch(e){}
+}
+quizRender();
 </script>
 </body>
 </html>
